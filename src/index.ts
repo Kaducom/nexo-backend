@@ -10,7 +10,15 @@ interface GoogleTokenResponse {
 	token_type: string;
 }
 
-function base64UrlEncode(input: string | ArrayBuffer): string {
+/*
+ * =========================================================
+ * BASE64 URL
+ * =========================================================
+ */
+
+function base64UrlEncode(
+	input: string | ArrayBuffer,
+): string {
 	let bytes: Uint8Array;
 
 	if (typeof input === "string") {
@@ -31,27 +39,61 @@ function base64UrlEncode(input: string | ArrayBuffer): string {
 		.replace(/=+$/, "");
 }
 
-function pemToArrayBuffer(pem: string): ArrayBuffer {
-	const normalizedPem = pem.replace(/\\n/g, "\n");
+/*
+ * =========================================================
+ * PRIVATE KEY PEM -> ARRAY BUFFER
+ * =========================================================
+ */
+
+function pemToArrayBuffer(
+	pem: string,
+): ArrayBuffer {
+	/*
+	 * A chave pode chegar do Cloudflare com "\n"
+	 * literalmente ou com quebras de linha reais.
+	 */
+	const normalizedPem =
+		pem.replace(/\\n/g, "\n");
 
 	const base64 = normalizedPem
-		.replace("-----BEGIN PRIVATE KEY-----", "")
-		.replace("-----END PRIVATE KEY-----", "")
+		.replace(
+			"-----BEGIN PRIVATE KEY-----",
+			"",
+		)
+		.replace(
+			"-----END PRIVATE KEY-----",
+			"",
+		)
 		.replace(/\s/g, "");
 
 	const binary = atob(base64);
 
-	const bytes = new Uint8Array(binary.length);
+	const bytes =
+		new Uint8Array(binary.length);
 
-	for (let i = 0; i < binary.length; i++) {
-		bytes[i] = binary.charCodeAt(i);
+	for (
+		let i = 0;
+		i < binary.length;
+		i++
+	) {
+		bytes[i] =
+			binary.charCodeAt(i);
 	}
 
 	return bytes.buffer;
 }
 
-async function getGoogleAccessToken(env: Env): Promise<string> {
-	const now = Math.floor(Date.now() / 1000);
+/*
+ * =========================================================
+ * GOOGLE OAUTH ACCESS TOKEN
+ * =========================================================
+ */
+
+async function getGoogleAccessToken(
+	env: Env,
+): Promise<string> {
+	const now =
+		Math.floor(Date.now() / 1000);
 
 	const header = {
 		alg: "RS256",
@@ -60,57 +102,109 @@ async function getGoogleAccessToken(env: Env): Promise<string> {
 
 	const payload = {
 		iss: env.FIREBASE_CLIENT_EMAIL,
-		scope: "https://www.googleapis.com/auth/firebase.messaging",
-		aud: "https://oauth2.googleapis.com/token",
+
+		scope:
+			"https://www.googleapis.com/auth/firebase.messaging",
+
+		aud:
+			"https://oauth2.googleapis.com/token",
+
 		iat: now,
 		exp: now + 3600,
 	};
 
-	const encodedHeader = base64UrlEncode(JSON.stringify(header));
-	const encodedPayload = base64UrlEncode(JSON.stringify(payload));
+	const encodedHeader =
+		base64UrlEncode(
+			JSON.stringify(header),
+		);
 
-	const unsignedToken = `${encodedHeader}.${encodedPayload}`;
+	const encodedPayload =
+		base64UrlEncode(
+			JSON.stringify(payload),
+		);
 
-	const privateKey = await crypto.subtle.importKey(
-		"pkcs8",
-		pemToArrayBuffer(env.FIREBASE_PRIVATE_KEY),
-		{
-			name: "RSASSA-PKCS1-v1_5",
-			hash: "SHA-256",
-		},
-		false,
-		["sign"],
-	);
+	const unsignedToken =
+		`${encodedHeader}.${encodedPayload}`;
 
-	const signature = await crypto.subtle.sign(
-		"RSASSA-PKCS1-v1_5",
-		privateKey,
-		new TextEncoder().encode(unsignedToken),
-	);
+	/*
+	 * -------------------------------------------------------
+	 * IMPORTA CHAVE PRIVADA
+	 * -------------------------------------------------------
+	 */
 
-	const jwt = `${unsignedToken}.${base64UrlEncode(signature)}`;
+	const privateKey =
+		await crypto.subtle.importKey(
+			"pkcs8",
 
-	const tokenResponse = await fetch(
-		"https://oauth2.googleapis.com/token",
-		{
-			method: "POST",
+			pemToArrayBuffer(
+				env.FIREBASE_PRIVATE_KEY,
+			),
 
-			headers: {
-				"Content-Type":
-					"application/x-www-form-urlencoded",
+			{
+				name:
+					"RSASSA-PKCS1-v1_5",
+
+				hash: "SHA-256",
 			},
 
-			body: new URLSearchParams({
-				grant_type:
-					"urn:ietf:params:oauth:grant-type:jwt-bearer",
+			false,
 
-				assertion: jwt,
-			}),
-		},
-	);
+			["sign"],
+		);
+
+	/*
+	 * -------------------------------------------------------
+	 * ASSINA JWT
+	 * -------------------------------------------------------
+	 */
+
+	const signature =
+		await crypto.subtle.sign(
+			"RSASSA-PKCS1-v1_5",
+
+			privateKey,
+
+			new TextEncoder().encode(
+				unsignedToken,
+			),
+		);
+
+	const jwt =
+		`${unsignedToken}.${base64UrlEncode(
+			signature,
+		)}`;
+
+	/*
+	 * -------------------------------------------------------
+	 * TROCA JWT POR ACCESS TOKEN GOOGLE
+	 * -------------------------------------------------------
+	 */
+
+	const tokenResponse =
+		await fetch(
+			"https://oauth2.googleapis.com/token",
+
+			{
+				method: "POST",
+
+				headers: {
+					"Content-Type":
+						"application/x-www-form-urlencoded",
+				},
+
+				body:
+					new URLSearchParams({
+						grant_type:
+							"urn:ietf:params:oauth:grant-type:jwt-bearer",
+
+						assertion: jwt,
+					}),
+			},
+		);
 
 	if (!tokenResponse.ok) {
-		const errorText = await tokenResponse.text();
+		const errorText =
+			await tokenResponse.text();
 
 		throw new Error(
 			`Falha ao gerar token OAuth: ${errorText}`,
@@ -123,48 +217,71 @@ async function getGoogleAccessToken(env: Env): Promise<string> {
 	return tokenData.access_token;
 }
 
+/*
+ * =========================================================
+ * ENVIO DA NOTIFICAÇÃO PELO FCM
+ * =========================================================
+ */
+
 async function sendNotification(
 	env: Env,
-	fid: string,
+	token: string,
 ): Promise<unknown> {
-	const accessToken = await getGoogleAccessToken(env);
+	const accessToken =
+		await getGoogleAccessToken(env);
 
-	const response = await fetch(
-		`https://fcm.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/messages:send`,
-		{
-			method: "POST",
+	const response =
+		await fetch(
+			`https://fcm.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/messages:send`,
 
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				"Content-Type": "application/json",
-			},
+			{
+				method: "POST",
 
-			body: JSON.stringify({
-				message: {
-					fid,
+				headers: {
+					Authorization:
+						`Bearer ${accessToken}`,
 
-					data: {
-						title: "NEXO 🔔",
+					"Content-Type":
+						"application/json",
+				},
 
-						body:
-							"Cloudflare Worker do NEXO está funcionando 😈",
+				body: JSON.stringify({
+					message: {
+						/*
+						 * IMPORTANTE:
+						 *
+						 * Aqui usamos o FCM
+						 * Registration Token retornado
+						 * pelo getToken() do frontend.
+						 */
+						token,
 
-						url: "/lembretes",
+						data: {
+							title: "NEXO 🔔",
 
-						tag: "nexo-cloudflare-test",
-					},
+							body:
+								"Cloudflare Worker do NEXO está funcionando 😈",
 
-					webpush: {
-						headers: {
-							Urgency: "high",
+							url:
+								"/lembretes",
+
+							tag:
+								"nexo-cloudflare-test",
+						},
+
+						webpush: {
+							headers: {
+								Urgency:
+									"high",
+							},
 						},
 					},
-				},
-			}),
-		},
-	);
+				}),
+			},
+		);
 
-	const text = await response.text();
+	const text =
+		await response.text();
 
 	if (!response.ok) {
 		throw new Error(
@@ -179,49 +296,101 @@ async function sendNotification(
 	}
 }
 
+/*
+ * =========================================================
+ * CLOUDFLARE WORKER
+ * =========================================================
+ */
+
 export default {
 	async fetch(
 		request: Request,
 		env: Env,
 	): Promise<Response> {
-		const url = new URL(request.url);
+		const url =
+			new URL(request.url);
+
+		/*
+		 * ---------------------------------------------------
+		 * HEALTH CHECK
+		 * ---------------------------------------------------
+		 */
 
 		if (url.pathname === "/") {
 			return Response.json({
 				success: true,
-				service: "NEXO Backend",
-				runtime: "Cloudflare Workers",
+
+				service:
+					"NEXO Backend",
+
+				runtime:
+					"Cloudflare Workers",
 			});
 		}
 
-		if (url.pathname === "/sendTestNotification") {
-			const fid = url.searchParams.get("fid");
+		/*
+		 * ---------------------------------------------------
+		 * TESTE DE NOTIFICAÇÃO
+		 * ---------------------------------------------------
+		 *
+		 * Exemplo:
+		 *
+		 * /sendTestNotification?token=FCM_TOKEN
+		 *
+		 */
 
-			if (!fid) {
+		if (
+			url.pathname ===
+			"/sendTestNotification"
+		) {
+			const token =
+				url.searchParams.get(
+					"token",
+				);
+
+			/*
+			 * -----------------------------------------------
+			 * TOKEN OBRIGATÓRIO
+			 * -----------------------------------------------
+			 */
+
+			if (!token) {
 				return Response.json(
 					{
 						success: false,
-						error: "missing-fid",
+
+						error:
+							"missing-token",
+
 						message:
-							"Informe o Firebase Installation ID em ?fid=...",
+							"Informe o FCM Registration Token em ?token=...",
 					},
+
 					{
 						status: 400,
 					},
 				);
 			}
 
+			/*
+			 * -----------------------------------------------
+			 * ENVIO
+			 * -----------------------------------------------
+			 */
+
 			try {
 				console.log(
-					"[NEXO] Enviando notificação.",
-					fid,
+					"[NEXO] Enviando notificação FCM.",
 				);
 
 				const result =
-					await sendNotification(env, fid);
+					await sendNotification(
+						env,
+						token,
+					);
 
 				console.log(
-					"[NEXO] Notificação enviada.",
+					"[NEXO] Notificação enviada com sucesso.",
 					result,
 				);
 
@@ -230,6 +399,12 @@ export default {
 					result,
 				});
 			} catch (error) {
+				/*
+				 * -------------------------------------------
+				 * ERRO
+				 * -------------------------------------------
+				 */
+
 				console.error(
 					"[NEXO] Falha ao enviar notificação.",
 					error,
@@ -238,14 +413,18 @@ export default {
 				return Response.json(
 					{
 						success: false,
+
 						error:
 							"notification-send-failed",
 
 						message:
 							error instanceof Error
 								? error.message
-								: String(error),
+								: String(
+										error,
+									),
 					},
+
 					{
 						status: 500,
 					},
@@ -253,11 +432,18 @@ export default {
 			}
 		}
 
+		/*
+		 * ---------------------------------------------------
+		 * ROTA NÃO ENCONTRADA
+		 * ---------------------------------------------------
+		 */
+
 		return Response.json(
 			{
 				success: false,
 				error: "not-found",
 			},
+
 			{
 				status: 404,
 			},
