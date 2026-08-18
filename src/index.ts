@@ -12,6 +12,40 @@ interface GoogleTokenResponse {
 
 /*
  * =========================================================
+ * CORS
+ * =========================================================
+ *
+ * Durante o desenvolvimento permitimos qualquer origem.
+ *
+ * Depois, quando o NEXO estiver definitivamente publicado,
+ * podemos restringir isso somente ao domínio oficial.
+ * =========================================================
+ */
+
+const corsHeaders = {
+	"Access-Control-Allow-Origin": "*",
+	"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+	"Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+/*
+ * =========================================================
+ * RESPOSTA JSON COM CORS
+ * =========================================================
+ */
+
+function jsonResponse(
+	data: unknown,
+	status = 200,
+): Response {
+	return Response.json(data, {
+		status,
+		headers: corsHeaders,
+	});
+}
+
+/*
+ * =========================================================
  * BASE64 URL
  * =========================================================
  */
@@ -52,6 +86,7 @@ function pemToArrayBuffer(
 	 * A chave pode chegar do Cloudflare com "\n"
 	 * literalmente ou com quebras de linha reais.
 	 */
+
 	const normalizedPem =
 		pem.replace(/\\n/g, "\n");
 
@@ -250,14 +285,24 @@ async function sendNotification(
 						/*
 						 * IMPORTANTE:
 						 *
-						 * Aqui usamos o FCM
-						 * Registration Token retornado
-						 * pelo getToken() do frontend.
+						 * Aqui usamos o FCM Registration
+						 * Token retornado pelo getToken()
+						 * do frontend.
 						 */
+
 						token,
 
+						/*
+						 * DATA-ONLY MESSAGE
+						 *
+						 * O Service Worker do NEXO
+						 * recebe esses dados e exibe
+						 * a notificação.
+						 */
+
 						data: {
-							title: "NEXO 🔔",
+							title:
+								"NEXO 🔔",
 
 							body:
 								"Cloudflare Worker do NEXO está funcionando 😈",
@@ -312,12 +357,31 @@ export default {
 
 		/*
 		 * ---------------------------------------------------
+		 * CORS PREFLIGHT
+		 * ---------------------------------------------------
+		 *
+		 * O navegador pode fazer uma requisição OPTIONS
+		 * antes da requisição real.
+		 *
+		 * Respondemos imediatamente autorizando o frontend.
+		 * ---------------------------------------------------
+		 */
+
+		if (request.method === "OPTIONS") {
+			return new Response(null, {
+				status: 204,
+				headers: corsHeaders,
+			});
+		}
+
+		/*
+		 * ---------------------------------------------------
 		 * HEALTH CHECK
 		 * ---------------------------------------------------
 		 */
 
 		if (url.pathname === "/") {
-			return Response.json({
+			return jsonResponse({
 				success: true,
 
 				service:
@@ -355,7 +419,7 @@ export default {
 			 */
 
 			if (!token) {
-				return Response.json(
+				return jsonResponse(
 					{
 						success: false,
 
@@ -366,9 +430,7 @@ export default {
 							"Informe o FCM Registration Token em ?token=...",
 					},
 
-					{
-						status: 400,
-					},
+					400,
 				);
 			}
 
@@ -383,6 +445,11 @@ export default {
 					"[NEXO] Enviando notificação FCM.",
 				);
 
+				console.log(
+					"[NEXO] Tamanho do registration token:",
+					token.length,
+				);
+
 				const result =
 					await sendNotification(
 						env,
@@ -394,7 +461,7 @@ export default {
 					result,
 				);
 
-				return Response.json({
+				return jsonResponse({
 					success: true,
 					result,
 				});
@@ -410,7 +477,7 @@ export default {
 					error,
 				);
 
-				return Response.json(
+				return jsonResponse(
 					{
 						success: false,
 
@@ -425,9 +492,7 @@ export default {
 									),
 					},
 
-					{
-						status: 500,
-					},
+					500,
 				);
 			}
 		}
@@ -438,15 +503,13 @@ export default {
 		 * ---------------------------------------------------
 		 */
 
-		return Response.json(
+		return jsonResponse(
 			{
 				success: false,
 				error: "not-found",
 			},
 
-			{
-				status: 404,
-			},
+			404,
 		);
 	},
 } satisfies ExportedHandler<Env>;
