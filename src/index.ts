@@ -380,17 +380,33 @@ export default {
 		 * ---------------------------------------------------
 		 */
 
-		if (url.pathname === "/") {
-			return jsonResponse({
-				success: true,
+if (url.pathname === "/") {
+    return Response.json({
+        success: true,
 
-				service:
-					"NEXO Backend",
+        service:
+            "NEXO Backend",
 
-				runtime:
-					"Cloudflare Workers",
-			});
-		}
+        runtime:
+            "Cloudflare Workers",
+
+        diagnostics: {
+            projectId:
+                env.FIREBASE_PROJECT_ID ??
+                "UNDEFINED",
+
+            hasClientEmail:
+                Boolean(
+                    env.FIREBASE_CLIENT_EMAIL,
+                ),
+
+            hasPrivateKey:
+                Boolean(
+                    env.FIREBASE_PRIVATE_KEY,
+                ),
+        },
+    });
+}
 
 		/*
 		 * ---------------------------------------------------
