@@ -10,27 +10,67 @@ interface GoogleTokenResponse {
 	token_type: string;
 }
 
+interface NotificationPayload {
+	token: string;
+	title: string;
+	body: string;
+	url: string;
+	tag: string;
+}
+
+/*
+ * =========================================================
+ * NEXO BACKEND
+ * =========================================================
+ *
+ * Backend de notificações do NEXO.
+ *
+ * Fluxo:
+ *
+ * NEXO
+ *   ↓
+ * Cloudflare Worker
+ *   ↓
+ * Google OAuth
+ *   ↓
+ * Firebase Cloud Messaging
+ *   ↓
+ * Service Worker
+ *   ↓
+ * Windows / celular
+ *
+ * =========================================================
+ */
+
 /*
  * =========================================================
  * CORS
  * =========================================================
  *
- * Durante o desenvolvimento permitimos qualquer origem.
+ * Durante o desenvolvimento permitimos chamadas do
+ * localhost e da futura versão web do NEXO.
  *
- * Depois, quando o NEXO estiver definitivamente publicado,
- * podemos restringir isso somente ao domínio oficial.
+ * Como o NEXO é um projeto pessoal, mantemos "*" por
+ * enquanto.
+ *
+ * Quando tivermos o domínio definitivo, podemos restringir
+ * para ele.
  * =========================================================
  */
 
 const corsHeaders = {
 	"Access-Control-Allow-Origin": "*",
-	"Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-	"Access-Control-Allow-Headers": "Content-Type, Authorization",
+
+	"Access-Control-Allow-Methods":
+		"GET, POST, OPTIONS",
+
+	"Access-Control-Allow-Headers":
+		"Content-Type, Authorization",
 };
 
 /*
  * =========================================================
- * RESPOSTA JSON COM CORS
+ * RESPOSTA JSON
  * =========================================================
  */
 
@@ -38,10 +78,13 @@ function jsonResponse(
 	data: unknown,
 	status = 200,
 ): Response {
-	return Response.json(data, {
-		status,
-		headers: corsHeaders,
-	});
+	return Response.json(
+		data,
+		{
+			status,
+			headers: corsHeaders,
+		},
+	);
 }
 
 /*
@@ -56,15 +99,24 @@ function base64UrlEncode(
 	let bytes: Uint8Array;
 
 	if (typeof input === "string") {
-		bytes = new TextEncoder().encode(input);
+		bytes =
+			new TextEncoder().encode(
+				input,
+			);
 	} else {
-		bytes = new Uint8Array(input);
+		bytes =
+			new Uint8Array(
+				input,
+			);
 	}
 
 	let binary = "";
 
 	for (const byte of bytes) {
-		binary += String.fromCharCode(byte);
+		binary +=
+			String.fromCharCode(
+				byte,
+			);
 	}
 
 	return btoa(binary)
@@ -82,29 +134,34 @@ function base64UrlEncode(
 function pemToArrayBuffer(
 	pem: string,
 ): ArrayBuffer {
-	/*
-	 * A chave pode chegar do Cloudflare com "\n"
-	 * literalmente ou com quebras de linha reais.
-	 */
-
 	const normalizedPem =
-		pem.replace(/\\n/g, "\n");
+		pem.replace(
+			/\\n/g,
+			"\n",
+		);
 
-	const base64 = normalizedPem
-		.replace(
-			"-----BEGIN PRIVATE KEY-----",
-			"",
-		)
-		.replace(
-			"-----END PRIVATE KEY-----",
-			"",
-		)
-		.replace(/\s/g, "");
+	const base64 =
+		normalizedPem
+			.replace(
+				"-----BEGIN PRIVATE KEY-----",
+				"",
+			)
+			.replace(
+				"-----END PRIVATE KEY-----",
+				"",
+			)
+			.replace(
+				/\s/g,
+				"",
+			);
 
-	const binary = atob(base64);
+	const binary =
+		atob(base64);
 
 	const bytes =
-		new Uint8Array(binary.length);
+		new Uint8Array(
+			binary.length,
+		);
 
 	for (
 		let i = 0;
@@ -120,6 +177,29 @@ function pemToArrayBuffer(
 
 /*
  * =========================================================
+ * CACHE DO GOOGLE ACCESS TOKEN
+ * =========================================================
+ *
+ * Antes:
+ *
+ * Cada notificação gerava um novo OAuth Access Token.
+ *
+ * Agora:
+ *
+ * Enquanto o Worker permanecer ativo, reutilizamos o
+ * Access Token até ele estar próximo da expiração.
+ *
+ * Isso reduz chamadas desnecessárias ao Google.
+ * =========================================================
+ */
+
+let cachedAccessToken:
+	string | null = null;
+
+let cachedAccessTokenExpiresAt = 0;
+
+/*
+ * =========================================================
  * GOOGLE OAUTH ACCESS TOKEN
  * =========================================================
  */
@@ -127,8 +207,34 @@ function pemToArrayBuffer(
 async function getGoogleAccessToken(
 	env: Env,
 ): Promise<string> {
+	/*
+	 * -------------------------------------------------------
+	 * TOKEN EM CACHE
+	 * -------------------------------------------------------
+	 */
+
+	const nowMilliseconds =
+		Date.now();
+
+	if (
+		cachedAccessToken &&
+		nowMilliseconds <
+			cachedAccessTokenExpiresAt -
+				60_000
+	) {
+		return cachedAccessToken;
+	}
+
+	/*
+	 * -------------------------------------------------------
+	 * CRIA JWT
+	 * -------------------------------------------------------
+	 */
+
 	const now =
-		Math.floor(Date.now() / 1000);
+		Math.floor(
+			Date.now() / 1000,
+		);
 
 	const header = {
 		alg: "RS256",
@@ -136,7 +242,8 @@ async function getGoogleAccessToken(
 	};
 
 	const payload = {
-		iss: env.FIREBASE_CLIENT_EMAIL,
+		iss:
+			env.FIREBASE_CLIENT_EMAIL,
 
 		scope:
 			"https://www.googleapis.com/auth/firebase.messaging",
@@ -145,17 +252,23 @@ async function getGoogleAccessToken(
 			"https://oauth2.googleapis.com/token",
 
 		iat: now,
-		exp: now + 3600,
+
+		exp:
+			now + 3600,
 	};
 
 	const encodedHeader =
 		base64UrlEncode(
-			JSON.stringify(header),
+			JSON.stringify(
+				header,
+			),
 		);
 
 	const encodedPayload =
 		base64UrlEncode(
-			JSON.stringify(payload),
+			JSON.stringify(
+				payload,
+			),
 		);
 
 	const unsignedToken =
@@ -163,7 +276,7 @@ async function getGoogleAccessToken(
 
 	/*
 	 * -------------------------------------------------------
-	 * IMPORTA CHAVE PRIVADA
+	 * IMPORTA PRIVATE KEY
 	 * -------------------------------------------------------
 	 */
 
@@ -179,7 +292,8 @@ async function getGoogleAccessToken(
 				name:
 					"RSASSA-PKCS1-v1_5",
 
-				hash: "SHA-256",
+				hash:
+					"SHA-256",
 			},
 
 			false,
@@ -220,7 +334,8 @@ async function getGoogleAccessToken(
 			"https://oauth2.googleapis.com/token",
 
 			{
-				method: "POST",
+				method:
+					"POST",
 
 				headers: {
 					"Content-Type":
@@ -228,12 +343,15 @@ async function getGoogleAccessToken(
 				},
 
 				body:
-					new URLSearchParams({
-						grant_type:
-							"urn:ietf:params:oauth:grant-type:jwt-bearer",
+					new URLSearchParams(
+						{
+							grant_type:
+								"urn:ietf:params:oauth:grant-type:jwt-bearer",
 
-						assertion: jwt,
-					}),
+							assertion:
+								jwt,
+						},
+					),
 			},
 		);
 
@@ -247,9 +365,226 @@ async function getGoogleAccessToken(
 	}
 
 	const tokenData =
-		(await tokenResponse.json()) as GoogleTokenResponse;
+		(await tokenResponse.json()) as
+			GoogleTokenResponse;
 
-	return tokenData.access_token;
+	/*
+	 * -------------------------------------------------------
+	 * SALVA EM CACHE
+	 * -------------------------------------------------------
+	 */
+
+	cachedAccessToken =
+		tokenData.access_token;
+
+	cachedAccessTokenExpiresAt =
+		Date.now() +
+		tokenData.expires_in *
+			1000;
+
+	return cachedAccessToken;
+}
+
+/*
+ * =========================================================
+ * VALIDAÇÃO DO AMBIENTE
+ * =========================================================
+ */
+
+function validateEnvironment(
+	env: Env,
+): void {
+	const missingVariables:
+		string[] = [];
+
+	if (
+		!env.FIREBASE_PROJECT_ID
+	) {
+		missingVariables.push(
+			"FIREBASE_PROJECT_ID",
+		);
+	}
+
+	if (
+		!env.FIREBASE_CLIENT_EMAIL
+	) {
+		missingVariables.push(
+			"FIREBASE_CLIENT_EMAIL",
+		);
+	}
+
+	if (
+		!env.FIREBASE_PRIVATE_KEY
+	) {
+		missingVariables.push(
+			"FIREBASE_PRIVATE_KEY",
+		);
+	}
+
+	if (
+		missingVariables.length >
+		0
+	) {
+		throw new Error(
+			`Variáveis ausentes no Worker: ${missingVariables.join(
+				", ",
+			)}`,
+		);
+	}
+}
+
+/*
+ * =========================================================
+ * NORMALIZA NOTIFICAÇÃO
+ * =========================================================
+ */
+
+function normalizeNotificationPayload(
+	input: unknown,
+): NotificationPayload {
+	if (
+		!input ||
+		typeof input !== "object"
+	) {
+		throw new Error(
+			"Payload da notificação inválido.",
+		);
+	}
+
+	const data =
+		input as Record<
+			string,
+			unknown
+		>;
+
+	/*
+	 * -------------------------------------------------------
+	 * TOKEN
+	 * -------------------------------------------------------
+	 */
+
+	const token =
+		typeof data.token ===
+		"string"
+			? data.token.trim()
+			: "";
+
+	if (!token) {
+		throw new Error(
+			"O token FCM é obrigatório.",
+		);
+	}
+
+	/*
+	 * -------------------------------------------------------
+	 * TITLE
+	 * -------------------------------------------------------
+	 */
+
+	const title =
+		typeof data.title ===
+			"string" &&
+		data.title.trim()
+			? data.title.trim()
+			: "NEXO 🔔";
+
+	/*
+	 * -------------------------------------------------------
+	 * BODY
+	 * -------------------------------------------------------
+	 */
+
+	const body =
+		typeof data.body ===
+			"string" &&
+		data.body.trim()
+			? data.body.trim()
+			: "Você tem um novo aviso.";
+
+	/*
+	 * -------------------------------------------------------
+	 * URL
+	 * -------------------------------------------------------
+	 */
+
+	const url =
+		typeof data.url ===
+			"string" &&
+		data.url.trim()
+			? data.url.trim()
+			: "/";
+
+	/*
+	 * -------------------------------------------------------
+	 * TAG
+	 * -------------------------------------------------------
+	 */
+
+	const tag =
+		typeof data.tag ===
+			"string" &&
+		data.tag.trim()
+			? data.tag.trim()
+			: "nexo-notification";
+
+	/*
+	 * -------------------------------------------------------
+	 * LIMITES
+	 * -------------------------------------------------------
+	 */
+
+	if (
+		token.length >
+		4096
+	) {
+		throw new Error(
+			"Token FCM inválido.",
+		);
+	}
+
+	if (
+		title.length >
+		120
+	) {
+		throw new Error(
+			"O título excede 120 caracteres.",
+		);
+	}
+
+	if (
+		body.length >
+		500
+	) {
+		throw new Error(
+			"A mensagem excede 500 caracteres.",
+		);
+	}
+
+	if (
+		url.length >
+		500
+	) {
+		throw new Error(
+			"A URL excede 500 caracteres.",
+		);
+	}
+
+	if (
+		tag.length >
+		120
+	) {
+		throw new Error(
+			"A tag excede 120 caracteres.",
+		);
+	}
+
+	return {
+		token,
+		title,
+		body,
+		url,
+		tag,
+	};
 }
 
 /*
@@ -260,17 +595,43 @@ async function getGoogleAccessToken(
 
 async function sendNotification(
 	env: Env,
-	token: string,
+	notification:
+		NotificationPayload,
 ): Promise<unknown> {
+	/*
+	 * -------------------------------------------------------
+	 * CONFERE CONFIGURAÇÃO
+	 * -------------------------------------------------------
+	 */
+
+	validateEnvironment(
+		env,
+	);
+
+	/*
+	 * -------------------------------------------------------
+	 * GOOGLE ACCESS TOKEN
+	 * -------------------------------------------------------
+	 */
+
 	const accessToken =
-		await getGoogleAccessToken(env);
+		await getGoogleAccessToken(
+			env,
+		);
+
+	/*
+	 * -------------------------------------------------------
+	 * FIREBASE CLOUD MESSAGING
+	 * -------------------------------------------------------
+	 */
 
 	const response =
 		await fetch(
 			`https://fcm.googleapis.com/v1/projects/${env.FIREBASE_PROJECT_ID}/messages:send`,
 
 			{
-				method: "POST",
+				method:
+					"POST",
 
 				headers: {
 					Authorization:
@@ -280,48 +641,44 @@ async function sendNotification(
 						"application/json",
 				},
 
-				body: JSON.stringify({
-					message: {
-						/*
-						 * IMPORTANTE:
-						 *
-						 * Aqui usamos o FCM Registration
-						 * Token retornado pelo getToken()
-						 * do frontend.
-						 */
+				body:
+					JSON.stringify(
+						{
+							message: {
+								token:
+									notification.token,
 
-						token,
+								/*
+								 * DATA-ONLY
+								 *
+								 * O Service Worker do NEXO
+								 * recebe estes dados e
+								 * monta a notificação.
+								 */
 
-						/*
-						 * DATA-ONLY MESSAGE
-						 *
-						 * O Service Worker do NEXO
-						 * recebe esses dados e exibe
-						 * a notificação.
-						 */
+								data: {
+									title:
+										notification.title,
 
-						data: {
-							title:
-								"NEXO 🔔",
+									body:
+										notification.body,
 
-							body:
-								"Cloudflare Worker do NEXO está funcionando 😈",
+									url:
+										notification.url,
 
-							url:
-								"/lembretes",
+									tag:
+										notification.tag,
+								},
 
-							tag:
-								"nexo-cloudflare-test",
-						},
-
-						webpush: {
-							headers: {
-								Urgency:
-									"high",
+								webpush: {
+									headers: {
+										Urgency:
+											"high",
+									},
+								},
 							},
 						},
-					},
-				}),
+					),
 			},
 		);
 
@@ -335,7 +692,9 @@ async function sendNotification(
 	}
 
 	try {
-		return JSON.parse(text);
+		return JSON.parse(
+			text,
+		);
 	} catch {
 		return text;
 	}
@@ -353,141 +712,167 @@ export default {
 		env: Env,
 	): Promise<Response> {
 		const url =
-			new URL(request.url);
+			new URL(
+				request.url,
+			);
 
 		/*
-		 * ---------------------------------------------------
+		 * ===================================================
 		 * CORS PREFLIGHT
-		 * ---------------------------------------------------
-		 *
-		 * O navegador pode fazer uma requisição OPTIONS
-		 * antes da requisição real.
-		 *
-		 * Respondemos imediatamente autorizando o frontend.
-		 * ---------------------------------------------------
+		 * ===================================================
 		 */
 
-		if (request.method === "OPTIONS") {
-			return new Response(null, {
-				status: 204,
-				headers: corsHeaders,
-			});
+		if (
+			request.method ===
+			"OPTIONS"
+		) {
+			return new Response(
+				null,
+				{
+					status: 204,
+
+					headers:
+						corsHeaders,
+				},
+			);
 		}
 
 		/*
-		 * ---------------------------------------------------
+		 * ===================================================
 		 * HEALTH CHECK
-		 * ---------------------------------------------------
-		 */
-
-if (url.pathname === "/") {
-    return Response.json({
-        success: true,
-
-        service:
-            "NEXO Backend",
-
-        runtime:
-            "Cloudflare Workers",
-
-        diagnostics: {
-            projectId:
-                env.FIREBASE_PROJECT_ID ??
-                "UNDEFINED",
-
-            hasClientEmail:
-                Boolean(
-                    env.FIREBASE_CLIENT_EMAIL,
-                ),
-
-            hasPrivateKey:
-                Boolean(
-                    env.FIREBASE_PRIVATE_KEY,
-                ),
-        },
-    });
-}
-
-		/*
-		 * ---------------------------------------------------
-		 * TESTE DE NOTIFICAÇÃO
-		 * ---------------------------------------------------
+		 * ===================================================
 		 *
-		 * Exemplo:
+		 * GET /
 		 *
-		 * /sendTestNotification?token=FCM_TOKEN
-		 *
+		 * Não mostramos mais informações das credenciais.
+		 * O diagnóstico que usamos durante a configuração
+		 * não é mais necessário.
 		 */
 
 		if (
 			url.pathname ===
-			"/sendTestNotification"
+			"/"
 		) {
-			const token =
-				url.searchParams.get(
-					"token",
-				);
+			return jsonResponse(
+				{
+					success:
+						true,
 
-			/*
-			 * -----------------------------------------------
-			 * TOKEN OBRIGATÓRIO
-			 * -----------------------------------------------
-			 */
+					service:
+						"NEXO Backend",
 
-			if (!token) {
-				return jsonResponse(
-					{
-						success: false,
+					runtime:
+						"Cloudflare Workers",
 
-						error:
-							"missing-token",
+					status:
+						"online",
+				},
+			);
+		}
 
-						message:
-							"Informe o FCM Registration Token em ?token=...",
-					},
+		/*
+		 * ===================================================
+		 * API REAL DE NOTIFICAÇÕES
+		 * ===================================================
+		 *
+		 * POST /notifications/send
+		 *
+		 * BODY:
+		 *
+		 * {
+		 *   "token": "...",
+		 *   "title": "NEXO",
+		 *   "body": "Mensagem",
+		 *   "url": "/lembretes",
+		 *   "tag": "lembrete-123"
+		 * }
+		 *
+		 * Essa será a rota utilizada posteriormente pelo
+		 * sistema real de lembretes.
+		 */
 
-					400,
-				);
-			}
-
-			/*
-			 * -----------------------------------------------
-			 * ENVIO
-			 * -----------------------------------------------
-			 */
-
+		if (
+			url.pathname ===
+				"/notifications/send" &&
+			request.method ===
+				"POST"
+		) {
 			try {
-				console.log(
-					"[NEXO] Enviando notificação FCM.",
-				);
+				/*
+				 * -------------------------------------------
+				 * LÊ JSON
+				 * -------------------------------------------
+				 */
+
+				const input =
+					await request.json();
+
+				/*
+				 * -------------------------------------------
+				 * VALIDA / NORMALIZA
+				 * -------------------------------------------
+				 */
+
+				const notification =
+					normalizeNotificationPayload(
+						input,
+					);
+
+				/*
+				 * -------------------------------------------
+				 * LOG SEGURO
+				 * -------------------------------------------
+				 *
+				 * Não colocamos o token completo no log.
+				 */
 
 				console.log(
-					"[NEXO] Tamanho do registration token:",
-					token.length,
+					"[NEXO] Enviando notificação.",
+					{
+						title:
+							notification.title,
+
+						tag:
+							notification.tag,
+
+						tokenLength:
+							notification
+								.token
+								.length,
+					},
 				);
+
+				/*
+				 * -------------------------------------------
+				 * ENVIA
+				 * -------------------------------------------
+				 */
 
 				const result =
 					await sendNotification(
 						env,
-						token,
+						notification,
 					);
 
 				console.log(
 					"[NEXO] Notificação enviada com sucesso.",
-					result,
 				);
 
-				return jsonResponse({
-					success: true,
-					result,
-				});
-			} catch (error) {
 				/*
 				 * -------------------------------------------
-				 * ERRO
+				 * SUCESSO
 				 * -------------------------------------------
 				 */
 
+				return jsonResponse(
+					{
+						success:
+							true,
+
+						result,
+					},
+				);
+			} catch (error) {
 				console.error(
 					"[NEXO] Falha ao enviar notificação.",
 					error,
@@ -495,13 +880,15 @@ if (url.pathname === "/") {
 
 				return jsonResponse(
 					{
-						success: false,
+						success:
+							false,
 
 						error:
 							"notification-send-failed",
 
 						message:
-							error instanceof Error
+							error instanceof
+							Error
 								? error.message
 								: String(
 										error,
@@ -514,15 +901,147 @@ if (url.pathname === "/") {
 		}
 
 		/*
-		 * ---------------------------------------------------
-		 * ROTA NÃO ENCONTRADA
-		 * ---------------------------------------------------
+		 * ===================================================
+		 * ROTA DE TESTE
+		 * ===================================================
+		 *
+		 * GET /sendTestNotification?token=FCM_TOKEN
+		 *
+		 * Mantemos essa rota porque ela é útil para
+		 * diagnóstico.
+		 *
+		 * Foi ela que provou que todo nosso circuito
+		 * FCM está funcionando.
+		 */
+
+		if (
+			url.pathname ===
+				"/sendTestNotification" &&
+			request.method ===
+				"GET"
+		) {
+			const token =
+				url.searchParams.get(
+					"token",
+				);
+
+			if (!token) {
+				return jsonResponse(
+					{
+						success:
+							false,
+
+						error:
+							"missing-token",
+
+						message:
+							"Informe o FCM Registration Token em ?token=...",
+					},
+
+					400,
+				);
+			}
+
+			try {
+				console.log(
+					"[NEXO] Executando teste de notificação.",
+				);
+
+				const result =
+					await sendNotification(
+						env,
+						{
+							token,
+
+							title:
+								"NEXO 🔔",
+
+							body:
+								"Sistema de notificações funcionando.",
+
+							url:
+								"/lembretes",
+
+							tag:
+								"nexo-notification-test",
+						},
+					);
+
+				return jsonResponse(
+					{
+						success:
+							true,
+
+						result,
+					},
+				);
+			} catch (error) {
+				console.error(
+					"[NEXO] Falha no teste de notificação.",
+					error,
+				);
+
+				return jsonResponse(
+					{
+						success:
+							false,
+
+						error:
+							"notification-send-failed",
+
+						message:
+							error instanceof
+							Error
+								? error.message
+								: String(
+										error,
+									),
+					},
+
+					500,
+				);
+			}
+		}
+
+		/*
+		 * ===================================================
+		 * MÉTODO INCORRETO
+		 * ===================================================
+		 */
+
+		if (
+			url.pathname ===
+			"/notifications/send"
+		) {
+			return jsonResponse(
+				{
+					success:
+						false,
+
+					error:
+						"method-not-allowed",
+
+					message:
+						"Use POST para enviar notificações.",
+				},
+
+				405,
+			);
+		}
+
+		/*
+		 * ===================================================
+		 * NOT FOUND
+		 * ===================================================
 		 */
 
 		return jsonResponse(
 			{
-				success: false,
-				error: "not-found",
+				success:
+					false,
+
+				error:
+					"not-found",
 			},
 
 			404,
