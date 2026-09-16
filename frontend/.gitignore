@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.tsbuildinfo
+*.log
+.env*
+!.env.example
+.firebase/
+.vercel/
+.wrangler/
+qa/artifacts/
+qa/node_modules/
+*service-account*.json
+*.pem
+*.key

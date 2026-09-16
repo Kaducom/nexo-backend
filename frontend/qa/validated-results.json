@@ -1,0 +1,311 @@
+{
+  "main": {
+    "results": [
+      {
+        "name": "Home empty states",
+        "status": "pass"
+      },
+      {
+        "name": "Quick expense: category then amount and submit",
+        "status": "pass"
+      },
+      {
+        "name": "Quick income: amount then category auto-save",
+        "status": "pass"
+      },
+      {
+        "name": "Quick invalid amount adds nothing",
+        "status": "pass"
+      },
+      {
+        "name": "Ctrl+K opens global search",
+        "status": "pass"
+      },
+      {
+        "name": "Memory creation, search, clear and delete",
+        "status": "pass"
+      },
+      {
+        "name": "Reminder create, complete, reopen and delete",
+        "status": "pass"
+      },
+      {
+        "name": "Finance manual transaction and delete",
+        "status": "pass"
+      },
+      {
+        "name": "Finance quick expense",
+        "status": "pass"
+      },
+      {
+        "name": "Commitment form custom frequency, unlimited and reminders",
+        "status": "pass"
+      },
+      {
+        "name": "Commitment pay, pause, resume, cancel and history",
+        "status": "pass"
+      },
+      {
+        "name": "Commitment delete preserves paid transactions",
+        "status": "pass"
+      },
+      {
+        "name": "Activity expand/collapse",
+        "status": "pass"
+      },
+      {
+        "name": "Populated Home retains every section",
+        "status": "pass"
+      },
+      {
+        "name": "Search across modules",
+        "status": "pass"
+      },
+      {
+        "name": "Desktop sidebar links and active indicator",
+        "status": "pass"
+      },
+      {
+        "name": "Desktop profile and notification prompt dismiss",
+        "status": "pass"
+      },
+      {
+        "name": "Settings notification activation (simulated service)",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 320px /",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 320px /memorias",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 320px /lembretes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 320px /financas",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 320px /buscar",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 320px /configuracoes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 390px /",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 390px /memorias",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 390px /lembretes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 390px /financas",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 390px /buscar",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 390px /configuracoes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 768px /",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 768px /memorias",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 768px /lembretes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 768px /financas",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 768px /buscar",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 768px /configuracoes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1024px /",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1024px /memorias",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1024px /lembretes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1024px /financas",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1024px /buscar",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1024px /configuracoes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1440px /",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1440px /memorias",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1440px /lembretes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1440px /financas",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1440px /buscar",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1440px /configuracoes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1920px /",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1920px /memorias",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1920px /lembretes",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1920px /financas",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1920px /buscar",
+        "status": "pass"
+      },
+      {
+        "name": "Responsive 1920px /configuracoes",
+        "status": "pass"
+      },
+      {
+        "name": "Mobile navigation all five routes",
+        "status": "pass"
+      },
+      {
+        "name": "Mobile account Escape, outside click and settings",
+        "status": "pass"
+      },
+      {
+        "name": "Mobile logout and Google entry (simulated auth)",
+        "status": "pass"
+      },
+      {
+        "name": "Long strings and large amounts have no horizontal overflow",
+        "status": "pass"
+      },
+      {
+        "name": "No uncaught client errors",
+        "status": "pass"
+      },
+      {
+        "name": "Production bundle: protected routes redirect to real Login",
+        "status": "pass"
+      }
+    ],
+    "errors": []
+  },
+  "additional": {
+    "results": [
+      {
+        "name": "Commitments responsive 320",
+        "status": "pass"
+      },
+      {
+        "name": "Commitments responsive 390",
+        "status": "pass"
+      },
+      {
+        "name": "Commitments responsive 768",
+        "status": "pass"
+      },
+      {
+        "name": "Commitments responsive 1024",
+        "status": "pass"
+      },
+      {
+        "name": "Commitments responsive 1440",
+        "status": "pass"
+      },
+      {
+        "name": "Commitments responsive 1920",
+        "status": "pass"
+      },
+      {
+        "name": "Mobile notification activation (mock)",
+        "status": "pass"
+      },
+      {
+        "name": "Keyboard focus is visible",
+        "status": "pass"
+      },
+      {
+        "name": "Desktop logout (mock)",
+        "status": "pass"
+      },
+      {
+        "name": "Real Login responsive 320",
+        "status": "pass"
+      },
+      {
+        "name": "Real Login responsive 390",
+        "status": "pass"
+      },
+      {
+        "name": "Real Login responsive 768",
+        "status": "pass"
+      },
+      {
+        "name": "Real Login responsive 1024",
+        "status": "pass"
+      },
+      {
+        "name": "Real Login responsive 1440",
+        "status": "pass"
+      },
+      {
+        "name": "Real Login responsive 1920",
+        "status": "pass"
+      }
+    ]
+  }
+}

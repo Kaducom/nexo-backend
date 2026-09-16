@@ -1,0 +1,11 @@
+@import "./design/tokens.css";
+@import "./design/globals.css";
+@import "./design/components.css";
+@import "./design/layout.css";
+@import "./styles/home.css";
+@import "./styles/organizer.css";
+@import "./styles/finance.css";
+@import "./styles/search.css";
+@import "./styles/settings.css";
+@import "./styles/auth.css";
+@import "./styles/bank-imports.css";

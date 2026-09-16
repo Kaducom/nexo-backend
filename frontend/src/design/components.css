@@ -1,0 +1,296 @@
+/* Shared surfaces and controls. Page files own composition. */
+.panel, .nexo-dashboard-card, .nexo-ui-card {
+  min-width: 0;
+  padding: var(--nexo-space-6);
+  border: 1px solid var(--nexo-border);
+  border-radius: var(--nexo-radius-lg);
+  background: var(--nexo-surface-1);
+  box-shadow: var(--nexo-shadow-card);
+}
+.nexo-ui-card-interactive {
+  transition: background var(--nexo-transition), border-color var(--nexo-transition);
+}
+.nexo-ui-card-interactive:hover {
+  background: var(--nexo-surface-2);
+  border-color: var(--nexo-border-hover);
+}
+.section-title-row, .nexo-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--nexo-space-4);
+  margin-bottom: var(--nexo-space-5);
+}
+.section-title-row > div, .nexo-card-header > div {
+  min-width: 0;
+}
+.eyebrow, .nexo-card-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nexo-space-2);
+  margin-bottom: var(--nexo-space-2);
+  font-size: var(--nexo-text-eyebrow);
+  font-weight: 600;
+  letter-spacing: .12em;
+  color: var(--nexo-text-muted);
+}
+.nexo-card-eyebrow svg {
+  color: var(--nexo-primary-text);
+}
+.nexo-card-eyebrow-warning, .nexo-card-eyebrow-warning svg {
+  color: var(--nexo-warning);
+}
+.nexo-card-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  color: var(--nexo-text-secondary);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-card-link:hover {
+  color: var(--nexo-primary-text);
+}
+.primary-button, .nexo-button, .nexo-secondary-action, .nexo-notification-prompt-button {
+  min-height: 44px;
+  padding: 10px 16px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--nexo-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--nexo-radius-sm);
+  font-size: var(--nexo-text-small);
+  font-weight: 600;
+  transition: background var(--nexo-transition), border-color var(--nexo-transition), color var(--nexo-transition);
+}
+.primary-button, .nexo-button-primary, .nexo-notification-prompt-button {
+  background: var(--nexo-primary);
+  color: var(--nexo-on-primary);
+}
+.primary-button:hover:not(:disabled), .nexo-button-primary:hover:not(:disabled), .nexo-notification-prompt-button:hover:not(:disabled) {
+  background: var(--nexo-primary-hover);
+}
+.primary-button:active:not(:disabled), .nexo-button-primary:active:not(:disabled) {
+  background: var(--nexo-primary-active);
+}
+.nexo-button-secondary, .nexo-secondary-action {
+  color: var(--nexo-text);
+  border-color: var(--nexo-border-hover);
+  background: var(--nexo-surface-2);
+}
+.nexo-button-ghost {
+  color: var(--nexo-text-secondary);
+  background: transparent;
+}
+.nexo-button-secondary:hover:not(:disabled), .nexo-button-ghost:hover:not(:disabled), .nexo-secondary-action:hover {
+  color: var(--nexo-text);
+  background: var(--nexo-surface-hover);
+}
+.nexo-button-danger {
+  color: var(--nexo-danger);
+  background: var(--nexo-danger-soft);
+}
+.nexo-button-sm {
+  min-height: 36px;
+  padding: 7px 12px;
+  font-size: var(--nexo-text-meta);
+}
+.nexo-button-lg {
+  min-height: 48px;
+}
+.nexo-button-full {
+  width: 100%;
+}
+.nexo-button-icon {
+  display: grid;
+  place-items: center;
+}
+.icon-button, .nexo-icon-button, .profile-settings, .nexo-topbar-button, .nexo-search-clear {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--nexo-radius-sm);
+  color: var(--nexo-text-secondary);
+  background: transparent;
+  transition: color var(--nexo-transition), background var(--nexo-transition);
+}
+.icon-button:hover:not(:disabled), .nexo-icon-button:hover:not(:disabled), .profile-settings:hover, .nexo-topbar-button:hover, .nexo-search-clear:hover {
+  color: var(--nexo-text);
+  background: var(--nexo-surface-hover);
+}
+.icon-button.danger, .nexo-icon-button-danger {
+  color: var(--nexo-danger);
+}
+.icon-button.danger:hover, .nexo-icon-button-danger:hover:not(:disabled) {
+  color: var(--nexo-danger);
+  background: var(--nexo-danger-soft);
+}
+.nexo-icon-button-primary {
+  color: var(--nexo-primary-text);
+  background: var(--nexo-primary-soft);
+}
+.badge, .nexo-badge, .nexo-activity-count {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: 4px 9px;
+  border-radius: var(--nexo-radius-xs);
+  color: var(--nexo-text-secondary);
+  background: var(--nexo-surface-3);
+  font-size: var(--nexo-text-meta);
+  font-weight: 500;
+}
+.nexo-badge-primary {
+  color: var(--nexo-primary-text);
+  background: var(--nexo-primary-soft);
+}
+.nexo-badge-success {
+  color: var(--nexo-success);
+  background: var(--nexo-success-soft);
+}
+.nexo-badge-warning {
+  color: var(--nexo-warning);
+  background: var(--nexo-warning-soft);
+}
+.nexo-badge-danger {
+  color: var(--nexo-danger);
+  background: var(--nexo-danger-soft);
+}
+.empty-state, .nexo-empty-state, .nexo-empty-feature, .nexo-empty-activity {
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nexo-space-2);
+  padding: var(--nexo-space-6);
+  text-align: center;
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-small);
+}
+.nexo-empty-state strong, .nexo-empty-feature strong, .nexo-empty-activity strong {
+  color: var(--nexo-text-secondary);
+  font-size: var(--nexo-text-body);
+}
+.nexo-empty-state p, .nexo-empty-feature p {
+  max-width: 360px;
+}
+.nexo-empty-state-icon, .nexo-empty-icon {
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--nexo-space-2);
+  color: var(--nexo-primary-text);
+}
+.nexo-empty-state-action {
+  margin-top: var(--nexo-space-3);
+}
+.icon-box {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--nexo-radius-sm);
+  color: var(--nexo-primary-text);
+  background: var(--nexo-primary-soft);
+}
+.segmented, .nexo-quick-type-toggle {
+  display: inline-flex;
+  gap: var(--nexo-space-1);
+  padding: var(--nexo-space-1);
+  width: fit-content;
+  border-radius: var(--nexo-radius-sm);
+  background: var(--nexo-bg-elevated);
+}
+.segmented button, .nexo-quick-type-toggle button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 7px 16px;
+  border: 0;
+  border-radius: var(--nexo-radius-xs);
+  background: transparent;
+  color: var(--nexo-text-secondary);
+  font-size: var(--nexo-text-small);
+}
+.segmented button.selected, .nexo-quick-type-toggle button.active {
+  color: var(--nexo-text);
+  background: var(--nexo-surface-3);
+}
+.nexo-quick-chips, .finance-quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nexo-space-2);
+}
+.nexo-quick-chip, .finance-quick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--nexo-border);
+  border-radius: var(--nexo-radius-sm);
+  color: var(--nexo-text-secondary);
+  background: var(--nexo-bg-elevated);
+  font-size: var(--nexo-text-meta);
+  transition: background var(--nexo-transition), border-color var(--nexo-transition);
+}
+.nexo-quick-chip:hover, .finance-quick-chip:hover {
+  border-color: var(--nexo-border-hover);
+  background: var(--nexo-surface-hover);
+}
+.nexo-quick-chip.active, .finance-quick-chip.active {
+  border-color: var(--nexo-primary-text);
+  color: var(--nexo-primary-text);
+  background: var(--nexo-primary-soft);
+}
+.nexo-quick-amount-row, .finance-quick-amount-row {
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-3);
+}
+.nexo-quick-amount-row input, .finance-quick-amount-row input {
+  flex: 1;
+  width: 0;
+  font-variant-numeric: tabular-nums;
+}
+.nexo-quick-amount-row > span, .finance-quick-currency {
+  color: var(--nexo-text-muted);
+}
+.nexo-quick-saved, .finance-quick-saved {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--nexo-success);
+  font-size: var(--nexo-text-meta);
+}
+.stack-list {
+  display: grid;
+}
+.nexo-income, .value-income, .nexo-stat-trend-up {
+  color: var(--nexo-success);
+}
+.nexo-expense, .value-expense, .nexo-balance-negative, .nexo-stat-trend-down {
+  color: var(--nexo-danger);
+}
+@media (max-width: 600px) {
+  .panel, .nexo-dashboard-card, .nexo-ui-card {
+    padding: var(--nexo-space-5);
+  }
+  .section-title-row, .nexo-card-header {
+    gap: var(--nexo-space-3);
+    flex-wrap: wrap;
+  }
+  .icon-button, .nexo-icon-button, .profile-settings, .nexo-topbar-button, .nexo-search-clear {
+    width: 44px;
+    height: 44px;
+  }
+}

@@ -1,0 +1,163 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+html {
+  background: var(--nexo-bg);
+  scroll-padding-block: 88px;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  font: var(--nexo-text-body)/1.6 var(--nexo-font-body);
+  color: var(--nexo-text);
+  background: var(--nexo-bg);
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea {
+  font: inherit;
+}
+button, a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+svg {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+img {
+  max-width: 100%;
+}
+h1, h2, h3, p {
+  margin: 0;
+}
+h1, h2, h3 {
+  font-family: var(--nexo-font-display);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -.03em;
+  overflow-wrap: anywhere;
+}
+h1 {
+  font-size: var(--nexo-text-h1);
+}
+h2 {
+  font-size: var(--nexo-text-h2);
+}
+h3 {
+  font-size: var(--nexo-text-h3);
+}
+small {
+  font-size: var(--nexo-text-meta);
+}
+strong {
+  font-weight: 600;
+}
+::selection {
+  background: var(--nexo-primary-border);
+  color: var(--nexo-text);
+}
+:focus-visible {
+  outline: 2px solid var(--nexo-primary-text);
+  outline-offset: 3px;
+}
+input, select, textarea {
+  min-width: 0;
+  width: 100%;
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid var(--nexo-border-hover);
+  border-radius: var(--nexo-radius-sm);
+  color: var(--nexo-text);
+  background: var(--nexo-bg-elevated);
+  transition: border-color var(--nexo-transition), box-shadow var(--nexo-transition);
+}
+input:focus, textarea:focus, select:focus {
+  border-color: var(--nexo-primary-text);
+  box-shadow: var(--nexo-focus-ring);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--nexo-text-muted);
+  opacity: 1;
+}
+input:disabled, select:disabled, textarea:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+input[aria-invalid="true"], textarea[aria-invalid="true"], select[aria-invalid="true"], input:user-invalid {
+  border-color: var(--nexo-danger);
+}
+input[type="checkbox"] {
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+  accent-color: var(--nexo-primary);
+}
+textarea {
+  min-height: 130px;
+  resize: vertical;
+  line-height: 1.65;
+}
+label, .nexo-field {
+  min-width: 0;
+  display: grid;
+  gap: var(--nexo-space-2);
+  color: var(--nexo-text-secondary);
+  font-size: var(--nexo-text-label);
+  font-weight: 500;
+}
+label small {
+  color: var(--nexo-text-muted);
+  font-weight: 400;
+}
+.nexo-field-label-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--nexo-space-3);
+  flex-wrap: wrap;
+}
+.nexo-input-with-icon {
+  position: relative;
+}
+.nexo-input-with-icon > svg {
+  position: absolute;
+  top: 50%;
+  left: 13px;
+  transform: translateY(-50%);
+  color: var(--nexo-text-muted);
+  pointer-events: none;
+}
+.nexo-input-with-icon input {
+  padding-left: 38px;
+}
+.nexo-spin, .settings-spinner {
+  animation: nexo-spin 900ms linear infinite;
+}
+@keyframes nexo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 600px) {
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

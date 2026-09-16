@@ -1,0 +1,601 @@
+.nexo-home {
+  padding-top: var(--nexo-space-6);
+}
+.nexo-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding-bottom: var(--nexo-space-4);
+  border-bottom: 1px solid var(--nexo-border);
+  margin-bottom: var(--nexo-space-10);
+}
+.nexo-topbar > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-4);
+  flex-wrap: wrap;
+}
+.nexo-version {
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-2);
+  color: var(--nexo-text-secondary);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-version svg {
+  color: var(--nexo-primary-text);
+}
+.nexo-current-date {
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-meta);
+  text-transform: capitalize;
+}
+.nexo-topbar-button {
+  position: relative;
+}
+.nexo-topbar-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: var(--nexo-radius-round);
+  color: var(--nexo-bg);
+  background: var(--nexo-warning);
+  font-size: 10px;
+  font-weight: 700;
+}
+.nexo-welcome {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, .85fr);
+  align-items: center;
+  column-gap: var(--nexo-space-10);
+  row-gap: var(--nexo-space-5);
+  margin-bottom: var(--nexo-space-8);
+}
+.nexo-welcome-label {
+  color: var(--nexo-primary-text);
+  font-size: var(--nexo-text-eyebrow);
+  letter-spacing: .14em;
+  font-weight: 600;
+}
+.nexo-welcome h1 {
+  margin-block: var(--nexo-space-2) var(--nexo-space-3);
+  font-size: var(--nexo-text-display);
+  letter-spacing: -.05em;
+  line-height: 1.15;
+}
+.nexo-welcome h1 span {
+  display: block;
+  color: var(--nexo-text-secondary);
+  font-weight: 500;
+  font-size: .7em;
+  letter-spacing: -.03em;
+  margin-top: 6px;
+}
+.nexo-welcome p {
+  max-width: 480px;
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-small);
+}
+.nexo-command-search {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--nexo-space-3);
+  width: 100%;
+  min-height: 54px;
+  padding: 12px 16px;
+  border: 1px solid var(--nexo-border-hover);
+  border-radius: var(--nexo-radius-md);
+  background: var(--nexo-surface-1);
+  color: var(--nexo-text-secondary);
+  text-align: left;
+  transition: border-color var(--nexo-transition), background var(--nexo-transition);
+}
+.nexo-command-search:hover {
+  border-color: var(--nexo-primary-text);
+  background: var(--nexo-surface-2);
+}
+.nexo-command-search-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--nexo-text-small);
+}
+.nexo-command-search-left svg {
+  color: var(--nexo-primary-text);
+}
+.nexo-command-search kbd {
+  flex-shrink: 0;
+  padding: 2px 5px;
+  border: 1px solid var(--nexo-border-hover);
+  border-radius: 4px;
+  color: var(--nexo-text-muted);
+  font: var(--nexo-text-eyebrow) var(--nexo-font-body);
+}
+.nexo-home-pulse {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-4);
+  flex-wrap: wrap;
+  color: var(--nexo-text-muted);
+}
+.nexo-pulse-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: var(--nexo-text-meta);
+}
+.nexo-pulse-item svg {
+  color: var(--nexo-text-secondary);
+}
+.nexo-pulse-divider {
+  width: 1px;
+  height: 12px;
+  background: var(--nexo-border-hover);
+}
+.nexo-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.3fr;
+  margin-bottom: var(--nexo-space-8);
+  border-block: 1px solid var(--nexo-border);
+}
+.nexo-stat-grid > div {
+  min-width: 0;
+}
+.nexo-stat-grid > div + div {
+  border-left: 1px solid var(--nexo-border);
+}
+.nexo-stat-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-4);
+  min-height: 120px;
+  padding: 20px 24px;
+  transition: background var(--nexo-transition);
+}
+.nexo-stat-card:hover {
+  background: var(--nexo-surface-1);
+}
+.nexo-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: var(--nexo-text-muted);
+}
+.nexo-stat-icon.purple {
+  color: var(--nexo-primary-text);
+}
+.nexo-stat-icon.amber {
+  color: var(--nexo-warning);
+}
+.nexo-stat-icon.green {
+  color: var(--nexo-success);
+}
+.nexo-stat-content {
+  min-width: 0;
+}
+.nexo-stat-content > span, .nexo-stat-content strong, .nexo-stat-content small {
+  display: block;
+}
+.nexo-stat-content > span {
+  color: var(--nexo-text-secondary);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-stat-content strong {
+  font: 700 clamp(22px, 2vw, 30px)/1.4 var(--nexo-font-display);
+  letter-spacing: -.045em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.nexo-stat-content small {
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-eyebrow);
+}
+.nexo-stat-arrow {
+  position: absolute;
+  right: 12px;
+  top: 16px;
+  color: var(--nexo-text-muted);
+}
+.nexo-stat-trend svg {
+  margin-right: 3px;
+}
+.nexo-attention-card {
+  margin-bottom: var(--nexo-space-6);
+  border-left: 2px solid var(--nexo-warning);
+  background: var(--nexo-bg-elevated);
+}
+.nexo-attention-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--nexo-space-2) var(--nexo-space-6);
+}
+.nexo-attention-item {
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-3);
+  padding: 12px 8px;
+  border-radius: var(--nexo-radius-sm);
+  transition: background var(--nexo-transition);
+}
+.nexo-attention-item:hover {
+  background: var(--nexo-surface-hover);
+}
+.nexo-attention-icon {
+  color: var(--nexo-warning);
+}
+.nexo-attention-item.overdue .nexo-attention-icon, .nexo-attention-item.overdue .nexo-attention-content span {
+  color: var(--nexo-danger);
+}
+.nexo-attention-content {
+  min-width: 0;
+}
+.nexo-attention-content strong, .nexo-attention-content span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.nexo-attention-content span {
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-risk-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nexo-space-3);
+  padding: var(--nexo-space-4);
+  margin-bottom: var(--nexo-space-3);
+  border-radius: var(--nexo-radius-sm);
+  background: var(--nexo-danger-soft);
+  color: var(--nexo-danger);
+  font-size: var(--nexo-text-small);
+}
+.nexo-risk-banner svg {
+  margin-top: 3px;
+}
+.nexo-risk-banner strong {
+  color: var(--nexo-text);
+}
+.nexo-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  gap: var(--nexo-space-6);
+  margin-bottom: var(--nexo-space-6);
+}
+.nexo-next-card {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(145deg, var(--nexo-primary-soft), var(--nexo-surface-1) 65%);
+}
+.nexo-next-event {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nexo-space-4);
+  padding-block: var(--nexo-space-4) var(--nexo-space-6);
+  flex: 1;
+}
+.nexo-next-event-icon {
+  color: var(--nexo-primary-text);
+  padding-top: 5px;
+}
+.nexo-next-event-content {
+  min-width: 0;
+}
+.nexo-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--nexo-space-3);
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-eyebrow);
+}
+.nexo-event-meta small {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--nexo-primary-text);
+}
+.nexo-next-event-content h3 {
+  font-size: 23px;
+  margin-block: var(--nexo-space-3);
+}
+.nexo-next-event-content > strong {
+  color: var(--nexo-primary-text);
+  font-size: var(--nexo-text-small);
+}
+.nexo-next-event-content p {
+  margin-top: var(--nexo-space-3);
+  color: var(--nexo-text-secondary);
+  font-size: var(--nexo-text-small);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.nexo-next-card .nexo-secondary-action {
+  margin-top: auto;
+  width: fit-content;
+}
+.nexo-finance-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--nexo-space-4);
+  padding-block: var(--nexo-space-2) var(--nexo-space-5);
+  border-bottom: 1px solid var(--nexo-border);
+}
+.nexo-finance-summary span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--nexo-text-meta);
+  color: var(--nexo-text-muted);
+}
+.nexo-finance-summary strong {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--nexo-font-display);
+  font-size: clamp(15px, 1.5vw, 22px);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.03em;
+  overflow-wrap: anywhere;
+}
+.nexo-category-section {
+  margin-top: var(--nexo-space-5);
+}
+.nexo-category-title, .nexo-category-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--nexo-space-3);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-category-title {
+  margin-bottom: var(--nexo-space-4);
+  color: var(--nexo-text-secondary);
+}
+.nexo-category-title small {
+  color: var(--nexo-text-muted);
+}
+.nexo-category-list {
+  display: grid;
+  gap: var(--nexo-space-3);
+}
+.nexo-category-meta {
+  margin-bottom: 6px;
+  color: var(--nexo-text-secondary);
+}
+.nexo-category-track {
+  height: 4px;
+  border-radius: var(--nexo-radius-round);
+  background: var(--nexo-surface-3);
+  overflow: hidden;
+}
+.nexo-category-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--nexo-primary);
+}
+.nexo-chart-empty {
+  min-height: 104px;
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-4);
+  color: var(--nexo-text-muted);
+}
+.nexo-chart-empty strong, .nexo-chart-empty span {
+  display: block;
+  font-size: var(--nexo-text-meta);
+}
+.nexo-chart-empty strong {
+  color: var(--nexo-text-secondary);
+}
+.nexo-quick-actions-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--nexo-space-6);
+  margin-bottom: var(--nexo-space-8);
+}
+.nexo-quick-form {
+  display: grid;
+  gap: var(--nexo-space-4);
+}
+.nexo-quick-hint {
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-links-card {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.nexo-quick-links {
+  display: grid;
+}
+.nexo-quick-link {
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-3);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--nexo-border);
+  transition: color var(--nexo-transition);
+}
+.nexo-quick-link:hover {
+  color: var(--nexo-primary-text);
+}
+.nexo-quick-link > span {
+  flex: 1;
+}
+.nexo-quick-link > svg {
+  color: var(--nexo-text-muted);
+}
+.nexo-quick-link-icon {
+  color: var(--nexo-text-secondary);
+}
+.nexo-activity-card {
+  border: 0;
+  border-top: 1px solid var(--nexo-border);
+  border-radius: 0;
+  padding: var(--nexo-space-6) 0 0;
+  background: transparent;
+  box-shadow: none;
+}
+.nexo-activity-list {
+  display: grid;
+}
+.nexo-activity-item {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: var(--nexo-space-4);
+  align-items: center;
+  min-height: 72px;
+  padding-block: var(--nexo-space-3);
+  border-bottom: 1px solid var(--nexo-border);
+}
+.nexo-activity-icon {
+  display: grid;
+  place-items: center;
+  color: var(--nexo-primary-text);
+}
+.nexo-activity-icon.income {
+  color: var(--nexo-success);
+}
+.nexo-activity-icon.expense {
+  color: var(--nexo-danger);
+}
+.nexo-activity-icon.reminder {
+  color: var(--nexo-warning);
+}
+.nexo-activity-content strong, .nexo-activity-content span {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.nexo-activity-content span, .nexo-activity-item time {
+  font-size: var(--nexo-text-meta);
+  color: var(--nexo-text-muted);
+}
+.nexo-activity-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  margin: 12px auto 0;
+  padding: 8px 16px;
+  border: 0;
+  border-radius: var(--nexo-radius-sm);
+  color: var(--nexo-text-secondary);
+  background: transparent;
+}
+.nexo-activity-toggle:hover {
+  background: var(--nexo-surface-hover);
+}
+.nexo-activity-toggle-icon {
+  transition: transform var(--nexo-transition);
+}
+.nexo-activity-toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+@media (max-width: 1100px) {
+  .nexo-welcome {
+    grid-template-columns: 1fr;
+  }
+  .nexo-command-search {
+    max-width: 520px;
+  }
+  .nexo-dashboard-grid, .nexo-quick-actions-grid {
+    gap: var(--nexo-space-4);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .nexo-stat-card {
+    padding: 20px 14px;
+    gap: var(--nexo-space-2);
+  }
+  .nexo-stat-icon {
+    display: none;
+  }
+  .nexo-finance-summary {
+    grid-template-columns: 1fr;
+    gap: var(--nexo-space-2);
+  }
+  .nexo-finance-summary > div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--nexo-space-3);
+  }
+  .nexo-finance-summary strong {
+    margin: 0;
+  }
+}
+@media (max-width: 860px) {
+  .nexo-topbar {
+    margin-bottom: var(--nexo-space-6);
+  }
+  .nexo-version {
+    display: none;
+  }
+  .nexo-command-search kbd {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .nexo-welcome {
+    row-gap: var(--nexo-space-4);
+  }
+  .nexo-topbar {
+    padding-bottom: var(--nexo-space-2);
+    margin-bottom: var(--nexo-space-6);
+  }
+  .nexo-stat-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .nexo-stat-grid > div:last-child {
+    grid-column: 1 / -1;
+    border-left: 0;
+    border-top: 1px solid var(--nexo-border);
+  }
+  .nexo-stat-card {
+    min-height: 105px;
+    padding: 16px;
+  }
+  .nexo-stat-grid > div:last-child .nexo-stat-card {
+    min-height: 92px;
+  }
+  .nexo-stat-grid > div:last-child .nexo-stat-content {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 3px 12px;
+  }
+  .nexo-stat-grid > div:last-child small {
+    grid-column: 1 / -1;
+  }
+  .nexo-stat-arrow {
+    display: none;
+  }
+  .nexo-dashboard-grid, .nexo-quick-actions-grid, .nexo-attention-list {
+    grid-template-columns: 1fr;
+  }
+  .nexo-home-pulse {
+    gap: var(--nexo-space-2);
+  }
+  .nexo-pulse-divider {
+    display: none;
+  }
+  .nexo-links-card {
+    padding-inline: 4px;
+  }
+  .nexo-activity-item {
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 4px 12px;
+  }
+  .nexo-activity-item time {
+    grid-column: 2;
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "nexo-visual-validation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "node server.mjs",
+    "test": "node test.mjs && node extra.mjs && node bank-tests.mjs",
+    "test:bank": "node bank-tests.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

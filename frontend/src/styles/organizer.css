@@ -1,0 +1,284 @@
+/* Memórias and Lembretes share the same editor/library composition. */
+.nexo-memory-stats, .nexo-reminder-stats {
+  display: flex;
+  gap: var(--nexo-space-8);
+  flex-wrap: wrap;
+  margin-bottom: var(--nexo-space-6);
+  padding-block: var(--nexo-space-5);
+  border-block: 1px solid var(--nexo-border);
+}
+.nexo-memory-stat, .nexo-reminder-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-3);
+}
+.nexo-memory-stat-icon, .nexo-reminder-stat-icon {
+  display: grid;
+  place-items: center;
+  color: var(--nexo-primary-text);
+  width: 32px;
+}
+.nexo-memory-stat-icon.secondary {
+  color: var(--nexo-text-muted);
+}
+.nexo-reminder-stat-icon.amber {
+  color: var(--nexo-warning);
+}
+.nexo-reminder-stat-icon.green {
+  color: var(--nexo-success);
+}
+.nexo-memory-stat span, .nexo-reminder-stat span {
+  display: block;
+  font-size: var(--nexo-text-meta);
+  color: var(--nexo-text-muted);
+}
+.nexo-memory-stat strong, .nexo-reminder-stat strong {
+  display: block;
+  font-family: var(--nexo-font-display);
+  font-size: 24px;
+}
+.nexo-memory-layout, .nexo-reminder-layout {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: var(--nexo-space-8);
+  align-items: start;
+}
+.nexo-memory-create, .nexo-reminder-create {
+  min-width: 0;
+  padding: var(--nexo-space-6);
+  border: 1px solid var(--nexo-border);
+  border-radius: var(--nexo-radius-lg);
+  background: var(--nexo-surface-1);
+}
+.nexo-memory-library, .nexo-reminder-agenda {
+  min-width: 0;
+  padding-block: var(--nexo-space-6);
+}
+.nexo-memory-panel-header, .nexo-memory-library-header, .nexo-reminder-panel-header, .nexo-reminder-agenda-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--nexo-space-3);
+  margin-bottom: var(--nexo-space-6);
+}
+.nexo-memory-panel-header p, .nexo-reminder-panel-header p {
+  margin-top: var(--nexo-space-2);
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-small);
+}
+.nexo-memory-header-icon, .nexo-reminder-header-icon {
+  color: var(--nexo-primary-text);
+  padding-top: var(--nexo-space-1);
+}
+.nexo-memory-form, .nexo-reminder-form {
+  display: grid;
+  gap: var(--nexo-space-5);
+}
+.nexo-security-note, .nexo-reminder-push-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nexo-space-3);
+  margin-top: var(--nexo-space-6);
+  padding-top: var(--nexo-space-4);
+  border-top: 1px solid var(--nexo-border);
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-security-note > div {
+  color: var(--nexo-warning);
+}
+.nexo-reminder-push-note > div {
+  color: var(--nexo-info);
+}
+.nexo-security-note strong, .nexo-reminder-push-note strong {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--nexo-text-secondary);
+}
+.nexo-memory-search {
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-2);
+  padding-left: var(--nexo-space-3);
+  border: 1px solid var(--nexo-border-hover);
+  border-radius: var(--nexo-radius-sm);
+  color: var(--nexo-primary-text);
+  background: var(--nexo-bg-elevated);
+  margin-bottom: var(--nexo-space-3);
+}
+.nexo-memory-search input {
+  border: 0;
+  background: transparent;
+}
+.nexo-search-result-info {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-block: var(--nexo-space-3);
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-search-result-info strong {
+  color: var(--nexo-primary-text);
+}
+.nexo-memory-list, .nexo-reminder-list {
+  display: grid;
+}
+.nexo-memory-card {
+  min-width: 0;
+  padding-block: var(--nexo-space-5);
+  border-bottom: 1px solid var(--nexo-border);
+}
+.nexo-memory-card-top, .nexo-memory-card-title {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nexo-space-3);
+}
+.nexo-memory-card-top {
+  justify-content: space-between;
+}
+.nexo-memory-card-title {
+  min-width: 0;
+}
+.nexo-memory-card-title > div {
+  min-width: 0;
+}
+.nexo-memory-card-icon {
+  color: var(--nexo-primary-text);
+  padding-top: 3px;
+}
+.nexo-memory-card-title span {
+  display: block;
+  margin-top: 5px;
+  font-size: var(--nexo-text-meta);
+  color: var(--nexo-text-muted);
+}
+.nexo-memory-content {
+  color: var(--nexo-text-secondary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-top: var(--nexo-space-3);
+}
+.nexo-memory-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--nexo-space-2);
+  margin-top: var(--nexo-space-4);
+}
+.nexo-memory-library-footer, .nexo-reminder-agenda-footer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nexo-space-2);
+  margin-top: var(--nexo-space-4);
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-memory-library-footer svg, .nexo-reminder-agenda-footer svg {
+  margin-top: 3px;
+}
+.nexo-next-reminder-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--nexo-space-4);
+  margin-bottom: var(--nexo-space-6);
+  padding: var(--nexo-space-5);
+  border-left: 2px solid var(--nexo-primary);
+  border-radius: var(--nexo-radius-sm);
+  background: var(--nexo-primary-soft);
+}
+.nexo-next-reminder-symbol {
+  color: var(--nexo-primary-text);
+}
+.nexo-next-reminder-info {
+  min-width: 0;
+  flex: 1;
+}
+.nexo-next-reminder-info span, .nexo-next-reminder-info strong, .nexo-next-reminder-info small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.nexo-next-reminder-info span {
+  color: var(--nexo-primary-text);
+  font-size: var(--nexo-text-eyebrow);
+  letter-spacing: .1em;
+}
+.nexo-next-reminder-info strong {
+  margin-top: 4px;
+}
+.nexo-next-reminder-info small {
+  margin-top: 4px;
+  color: var(--nexo-text-secondary);
+}
+.nexo-reminder-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--nexo-space-3);
+  padding-block: var(--nexo-space-5);
+  border-bottom: 1px solid var(--nexo-border);
+}
+.nexo-reminder-card-marker {
+  color: var(--nexo-primary-text);
+  padding-top: 3px;
+}
+.nexo-reminder-card.overdue .nexo-reminder-card-marker {
+  color: var(--nexo-danger);
+}
+.nexo-reminder-card.completed .nexo-reminder-card-marker {
+  color: var(--nexo-success);
+}
+.nexo-reminder-card.completed h3 {
+  text-decoration: line-through;
+  color: var(--nexo-text-secondary);
+}
+.nexo-reminder-card-body {
+  flex: 1;
+  min-width: 0;
+}
+.nexo-reminder-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--nexo-space-3);
+}
+.nexo-reminder-date {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--nexo-space-2);
+  color: var(--nexo-text-muted);
+  font-size: var(--nexo-text-meta);
+}
+.nexo-reminder-card-body > p {
+  margin-top: var(--nexo-space-3);
+  color: var(--nexo-text-secondary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.nexo-reminder-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--nexo-space-2);
+  margin-top: var(--nexo-space-3);
+}
+@media (max-width: 1100px) {
+  .nexo-memory-layout, .nexo-reminder-layout {
+    grid-template-columns: 1fr;
+    gap: var(--nexo-space-4);
+  }
+}
+@media (max-width: 600px) {
+  .nexo-memory-create, .nexo-reminder-create {
+    padding: var(--nexo-space-5);
+  }
+  .nexo-memory-stats, .nexo-reminder-stats {
+    gap: var(--nexo-space-4);
+    justify-content: space-between;
+  }
+  .nexo-memory-stat-icon, .nexo-reminder-stat-icon {
+    display: none;
+  }
+  .nexo-reminder-card-heading {
+    flex-wrap: wrap;
+  }
+}

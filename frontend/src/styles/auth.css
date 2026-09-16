@@ -1,0 +1,97 @@
+.nexo-auth {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  background: radial-gradient(ellipse at 50% 0%, var(--nexo-primary-soft), transparent 65%), var(--nexo-bg);
+}
+.nexo-auth-card {
+  width: 100%;
+  max-width: 460px;
+  padding: clamp(24px, 5vw, 48px);
+  border: 1px solid var(--nexo-border);
+  border-radius: var(--nexo-radius-xl);
+  background: var(--nexo-surface-1);
+  box-shadow: var(--nexo-shadow-floating);
+}
+.nexo-auth-mark {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--nexo-space-8);
+  border-radius: var(--nexo-radius-lg);
+  border: 1px solid var(--nexo-primary-border);
+  background: var(--nexo-primary-soft);
+  color: var(--nexo-primary-text);
+}
+.nexo-auth-brand {
+  display: block;
+  margin-bottom: var(--nexo-space-3);
+  font-size: var(--nexo-text-eyebrow);
+  font-weight: 700;
+  letter-spacing: .2em;
+  color: var(--nexo-primary-text);
+}
+.nexo-auth-card h1 {
+  font-size: 32px;
+  line-height: 1.2;
+}
+.nexo-auth-description {
+  margin-block: var(--nexo-space-4) var(--nexo-space-8);
+  color: var(--nexo-text-secondary);
+}
+.nexo-auth-google {
+  width: 100%;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nexo-space-3);
+  padding: 12px 16px;
+  border: 0;
+  border-radius: var(--nexo-radius-sm);
+  color: var(--nexo-bg);
+  background: var(--nexo-text);
+  font-weight: 600;
+  transition: background var(--nexo-transition);
+}
+.nexo-auth-google:hover:not(:disabled) {
+  background: #dcd5ee;
+}
+.nexo-google-mark {
+  font-size: 19px;
+  font-weight: 800;
+}
+.nexo-auth-error {
+  color: var(--nexo-danger);
+  font-size: var(--nexo-text-small);
+  margin-top: var(--nexo-space-4);
+}
+.nexo-auth-footer {
+  margin-top: var(--nexo-space-6);
+  padding-top: var(--nexo-space-5);
+  border-top: 1px solid var(--nexo-border);
+  color: var(--nexo-text-muted);
+  text-align: center;
+  font-size: var(--nexo-text-meta);
+}
+.nexo-auth-loading {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nexo-space-4);
+  color: var(--nexo-text-secondary);
+}
+.nexo-auth-loading-mark {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--nexo-radius-md);
+  color: var(--nexo-primary-text);
+  background: var(--nexo-primary-soft);
+  font: 800 24px var(--nexo-font-display);
+}
