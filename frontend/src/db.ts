@@ -1,6 +1,10 @@
 import Dexie, {
+  type Table,
   type EntityTable
 } from "dexie";
+
+import { installOutbox } from "./sync/outbox";
+import type { PendingChange, SyncVersion, SyncMeta } from "./sync/model";
 
 import type {
   BankImportEntry,
@@ -11,7 +15,10 @@ import type {
   Reminder
 } from "./types";
 
-export const db = new Dexie("NexoDB") as Dexie & {
+export type NexoDatabase = Dexie & {
+  syncOutbox: Table<PendingChange, string>;
+  syncVersions: Table<SyncVersion, string>;
+  syncMeta: Table<SyncMeta, string>;
   bankImports: EntityTable<BankImportEntry, "id">;
   bankRules: EntityTable<BankCategoryRule, "id">;
   memories: EntityTable<Memory, "id">;
@@ -31,6 +38,8 @@ export const db = new Dexie("NexoDB") as Dexie & {
 
 
 
+export function createNexoDatabase(name: string, sync = false): NexoDatabase {
+const db = new Dexie(name) as NexoDatabase;
 /*
  * =========================================================
  * NEXO DATABASE — VERSION 1
@@ -113,3 +122,11 @@ db.version(4).stores({
   bankImports: "++id,&externalKey,status,occurredAt,createdAt",
   bankRules: "++id,&matchKey",
 });
+
+db.version(5).stores({ syncOutbox: "key,table", syncVersions: "key", syncMeta: "key" });
+if (sync) installOutbox(db);
+return db;
+}
+
+export let db = createNexoDatabase("NexoDB");
+export function bindAccountDatabase(database: NexoDatabase) { db = database; }

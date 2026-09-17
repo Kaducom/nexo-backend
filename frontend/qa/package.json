@@ -5,9 +5,13 @@
   "scripts": {
     "serve": "node server.mjs",
     "test": "node test.mjs && node extra.mjs && node bank-tests.mjs",
-    "test:bank": "node bank-tests.mjs"
+    "test:bank": "node bank-tests.mjs",
+    "test:sync": "node --import ./typescript-loader.mjs sync-tests.ts",
+    "test:rules": "node --import ./typescript-loader.mjs firestore-tests.mjs"
   },
   "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "fake-indexeddb": "^6.2.5",
     "playwright": "1.62.1"
   }
 }

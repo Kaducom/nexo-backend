@@ -1,0 +1,15 @@
+.account-gate { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
+.account-gate > section { width: min(100%, 560px); display: grid; gap: 20px; }
+.account-gate h1 { font-size: 25px; line-height: 1.3; }
+.account-gate p, .account-sync-settings p { color: var(--nexo-text-secondary); line-height: 1.65; overflow-wrap: anywhere; }
+.account-sync-indicator { display: flex; flex-wrap: wrap; gap: 8px 20px; justify-content: space-between; font-size: 12px; margin-bottom: 24px; padding: 12px 16px; background: var(--nexo-surface-2); border-radius: 8px; color: var(--nexo-text-secondary); }
+.account-sync-indicator a { color: var(--nexo-primary-text); }
+.account-sync-attention { background: var(--nexo-warning-soft); color: var(--nexo-warning); }
+.account-sync-settings { display: grid; gap: 16px; margin-bottom: 24px; }
+.account-conflict { display: grid; gap: 14px; padding-block: 20px; border-top: 1px solid var(--nexo-border); min-width: 0; }
+.account-conflict-versions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.account-conflict-versions dl { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 280px; overflow-y: auto; padding: 12px; background: var(--nexo-surface-2); font-size: 13px; }
+.account-conflict-versions dl > div { margin-bottom: 12px; }
+.account-conflict-versions dt { font-weight: 600; }
+.account-conflict-versions dd { margin: 4px 0 0; }
+@media (max-width: 600px) { .account-conflict-versions { grid-template-columns: 1fr; } }

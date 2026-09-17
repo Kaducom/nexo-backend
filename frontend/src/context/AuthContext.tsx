@@ -52,10 +52,17 @@ export function AuthProvider({
     useState(true);
 
   useEffect(() => {
+    let activeUid: string | null = null;
     const unsubscribe =
       onAuthStateChanged(
         firebaseAuth,
         (firebaseUser) => {
+          if (activeUid && firebaseUser?.uid !== activeUid) {
+            setLoading(true);
+            window.location.reload();
+            return;
+          }
+          activeUid = firebaseUser?.uid ?? null;
           setUser(firebaseUser);
           setLoading(false);
         },

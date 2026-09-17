@@ -31,7 +31,7 @@ try {
       const { db } = await import('/src/db.ts'); await db.open();
       return { version: db.verno, counts: await Promise.all(['memories', 'reminders', 'transactions', 'financialCommitments', 'bankImports', 'bankRules'].map(t => db[t].count())) };
     });
-    assert.equal(result.version, 4); assert.deepEqual(result.counts, [1, 1, 1, 1, 0, 0]);
+    assert.equal(result.version, 5); assert.deepEqual(result.counts, [1, 1, 1, 1, 0, 0]);
   });
   await check('Money/date parsing rejects malformed values and impossible dates', async () => {
     assert.deepEqual(await evaluate(async () => {

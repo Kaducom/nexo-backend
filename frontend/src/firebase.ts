@@ -32,12 +32,9 @@ export const firebaseAuth =
   getAuth(firebaseApp);
 
 /*
- * Firestore é usado apenas para o que precisa sair do
- * dispositivo: o token de notificação (FCM) e um espelho
- * mínimo dos lembretes, para que a Cloud Function agendada
- * consiga avisar o usuário mesmo com o NEXO fechado.
- *
- * Os dados completos continuam vivendo no Dexie local.
+ * Firestore sincroniza os dados completos em users/{uid}/data.
+ * Dexie mantém uma cópia offline separada por conta e a fila de envio.
+ * O espelho de lembretes e o token FCM continuam atendendo ao agendador.
  */
 export const firestoreDb =
   getFirestore(firebaseApp);

@@ -1,3 +1,4 @@
+import AccountDataGate from "./AccountDataGate";
 import type {
   ReactNode
 } from "react";
@@ -48,5 +49,5 @@ export default function ProtectedRoute({
     );
   }
 
-  return children;
+  return <AccountDataGate key={user.uid} uid={user.uid} email={user.email}>{children}</AccountDataGate>;
 }

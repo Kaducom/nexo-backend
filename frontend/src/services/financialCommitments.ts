@@ -1,3 +1,4 @@
+import { stableId } from "../sync/model";
 import { db } from "../db";
 
 import {
@@ -414,6 +415,7 @@ export async function markFinancialCommitmentAsPaid(
        */
 
       await db.transactions.add({
+        id: stableId(`commitmentPayment:${commitment.id}:${nextCompletedPayments}`),
         description:
           commitment.title,
 

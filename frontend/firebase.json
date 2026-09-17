@@ -1,4 +1,5 @@
 {
+  "firestore": { "rules": "firestore.rules" },
   "hosting": {
     "site": "nexo-15b2c",
     "public": "dist",

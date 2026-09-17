@@ -1,3 +1,4 @@
+import { SyncIndicator } from "./AccountDataGate";
 import {
   Bell,
   BellRing,
@@ -384,7 +385,7 @@ export default function AppLayout() {
               </strong>
 
               <span>
-                Dados salvos localmente
+                Dados da sua conta
               </span>
             </div>
           </div>
@@ -609,7 +610,7 @@ export default function AppLayout() {
                     </strong>
 
                     <span>
-                      Dados protegidos localmente
+                      Dados separados por conta
                     </span>
                   </div>
                 </div>
@@ -706,7 +707,7 @@ export default function AppLayout() {
        */}
 
       <main className="content" id="nexo-content" tabIndex={-1}>
-        <Outlet />
+        <SyncIndicator /><Outlet />
       </main>
 
       {/*

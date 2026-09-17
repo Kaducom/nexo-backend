@@ -18,7 +18,7 @@ Copie `.env.example` para `.env.local` e configure `VITE_FIREBASE_VAPID_KEY` par
 npm run build
 ```
 
-O resultado fica em `frontend/dist`. O servidor precisa servir `index.html` para rotas da aplicação, incluindo `/financas/importar`. O frontend usa Firebase Authentication e IndexedDB local. O Worker de notificações permanece na raiz do repositório.
+O resultado fica em `frontend/dist`. O servidor precisa servir `index.html` para rotas da aplicação, incluindo `/financas/importar`. O frontend usa Firebase Authentication, Firestore para sincronização por conta e IndexedDB para acesso offline. Publique as regras antes do Hosting, usando o script da raiz. Consulte [SINCRONIZACAO.md](SINCRONIZACAO.md) para migração, testes e funcionamento. O Worker de notificações permanece na raiz do repositório.
 
 ## Publicar no endereço existente
 

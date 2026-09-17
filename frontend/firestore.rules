@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    match /users/{uid} {
+      allow read, write: if owner(uid);
+      // Compatibility with the existing notification scheduler.
+      match /reminders/{id} { allow read, write: if owner(uid); }
+      match /data/{key} {
+        function valid() {
+          let d = request.resource.data;
+          return d.keys().hasOnly(['key','table','id','revision','changeId','deviceId','deleted','payload','updatedAt'])
+            && d.table in ['memories','reminders','transactions','financialCommitments','bankImports','bankRules']
+            && d.id is int && d.id > 0 && d.id <= 9007199254740991
+            && d.key == key && key == d.table + '_' + string(d.id)
+            && d.revision is int && d.revision > 0
+            && d.changeId is string && d.changeId.size() > 0 && d.changeId.size() <= 100
+            && d.deviceId is string && d.deviceId.size() > 0 && d.deviceId.size() <= 100
+            && d.deleted is bool
+            && ((d.deleted && d.payload == null) || (!d.deleted && d.payload is map && d.payload.id == d.id))
+            && d.updatedAt == request.time;
+        }
+        allow read: if owner(uid);
+        allow create: if owner(uid) && valid() && request.resource.data.revision == 1;
+        allow update: if owner(uid) && valid()
+          && request.resource.data.revision == resource.data.revision + 1;
+        // Keep deletion markers so offline devices cannot revive removed items.
+        allow delete: if false;
+      }
+    }
+  }
+}

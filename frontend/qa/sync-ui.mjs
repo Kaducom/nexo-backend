@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {chromium} from 'playwright';
+const browser=await chromium.launch({headless:true,...(process.env.NEXO_TEST_BROWSER?{executablePath:process.env.NEXO_TEST_BROWSER}:{})});
+const context=await browser.newContext({viewport:{width:390,height:844}}), page=await context.newPage();
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+const base='http://127.0.0.1:4175';
+fs.mkdirSync(new URL('./artifacts/',import.meta.url),{recursive:true});
+try{
+ await page.goto(base+'/qa/blank.html');
+ await page.evaluate(async()=>{const {db}=await import('/src/db.ts');await db.memories.add({title:'Memória antiga',content:'Preservar este texto',tags:[],createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()});});
+ await page.goto(base+'/memorias');
+ await page.getByRole('button',{name:'Vincular à minha conta',exact:true}).waitFor();
+ assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth>innerWidth),false);
+ await page.screenshot({path:new URL('./artifacts/sync-migration-mobile.png',import.meta.url).pathname.replace(/^\/(\w:)/,'$1'),fullPage:true});
+ await page.getByRole('button',{name:'Vincular à minha conta',exact:true}).click();
+ await page.getByText('Memória antiga',{exact:true}).waitFor();
+ await page.getByText('Dados sincronizados com sua conta',{exact:true}).waitFor();
+ console.log('PASS Legacy ownership gate and migration with real IndexedDB');
+ await page.evaluate(async()=>{const {db}=await import('/src/db.ts');const row=(await db.memories.toArray())[0];await db.memories.update(row.id,{content:'Texto do celular'});const p=await db.syncOutbox.get('memories_'+row.id);await db.syncOutbox.put({...p,conflict:{...p,revision:99,deviceId:'pc',payload:{...row,content:'Texto do computador'},changeId:'conflict'}});});
+ await page.getByRole('link',{name:'Ver sincronização'}).click();
+ await page.getByRole('button',{name:'Usar versão da conta',exact:true}).waitFor();
+ await page.getByText('Texto do celular',{exact:true}).waitFor();await page.getByText('Texto do computador',{exact:true}).waitFor();
+ assert.equal(await page.locator('body').evaluate(el=>el.scrollWidth>innerWidth),false);
+ await page.screenshot({path:new URL('./artifacts/sync-settings-mobile.png',import.meta.url).pathname.replace(/^\/(\w:)/,'$1'),fullPage:true});
+ await page.getByRole('button',{name:'Usar versão da conta',exact:true}).click();
+ await page.waitForFunction(async()=>!(await (await import('/src/db.ts')).db.syncOutbox.toArray()).some(p=>p.conflict));
+ console.log('PASS Friendly conflict review and resolution on mobile');
+ await page.evaluate(()=>sessionStorage.setItem('qa-uid','another-account'));
+ await page.goto(base+'/memorias');
+ await page.getByText('Dados sincronizados com sua conta',{exact:true}).waitFor();
+ assert.equal(await page.getByText('Memória antiga',{exact:true}).count(),0);
+ assert.equal(await page.evaluate(async()=>(await import('/src/db.ts')).db.memories.count()),0);
+ console.log('PASS Switching accounts opens isolated database and cannot claim previous data');
+ assert.deepEqual(errors,[]);console.log('PASS No uncaught browser errors');
+}finally{await browser.close();}

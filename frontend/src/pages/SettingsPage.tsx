@@ -1,3 +1,4 @@
+import AccountSyncSettings from "../components/AccountSyncSettings";
 import {
   Bell,
   BellOff,
@@ -244,6 +245,7 @@ export default function SettingsPage() {
         </div>
       </header>
 
+      <AccountSyncSettings />
       <section className="settings-grid">
         <article className="panel settings-card">
           <div className="settings-card-header">
