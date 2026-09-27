@@ -1,3 +1,4 @@
+import EmailSource from "../components/EmailSource";
 import { FormEvent, useMemo, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { motion } from "framer-motion";
@@ -352,9 +353,8 @@ export default function RemindersPage() {
 
             <p>
               <strong>Notificações inteligentes</strong>
-              Nesta etapa o compromisso fica registrado no
-              NEXO. Os avisos automáticos fora do app serão
-              conectados ao sistema de notificações.
+              Ative as notificações em Configurações para receber
+              os avisos também com o NEXO fechado.
             </p>
           </div>
         </motion.form>
@@ -419,7 +419,7 @@ export default function RemindersPage() {
                     <div className="nexo-reminder-card-body">
                       <div className="nexo-reminder-card-heading">
                         <div>
-                          <h3>{reminder.title}</h3>
+                          <EmailSource provider={reminder.emailProvider}/><h3>{reminder.title}</h3>
 
                           <div className="nexo-reminder-date">
                             <Clock3 size={13} />

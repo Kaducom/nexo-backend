@@ -1,3 +1,4 @@
+import { celebrateMoney } from "../components/MoneyEffects";
 import {
   FormEvent,
   useMemo,
@@ -302,6 +303,7 @@ export default function FinancePage() {
       createdAt: new Date().toISOString()
     });
 
+    celebrateMoney("expense", categoryName);
     setQuickAmount("");
     setQuickCategory(null);
     setQuickSaved(true);
@@ -453,6 +455,7 @@ export default function FinancePage() {
         new Date().toISOString()
     });
 
+    celebrateMoney(type, `${category} ${description}`);
     setDescription("");
     setAmount("");
   }

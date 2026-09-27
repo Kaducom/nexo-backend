@@ -22,7 +22,7 @@ export default function ReminderNotices() {
       });
       if(mounted.current&&claimed)setNotices(items=>[...items,notice].slice(-3));
     }
-    for(const r of reminders){const due=Date.parse(r.startsAt);if(!r.completed&&due<=now&&due>=now-86400000)void notify({title:r.title,body:r.notes || 'Chegou a hora do seu lembrete.',tag:`nexo-${r.id}-${r.startsAt}`}).catch(()=>{});}
+    for(const r of reminders){const due=Date.parse(r.startsAt);if(!r.completed&&due<=now&&due>=now-86400000)void notify({title:r.emailProvider?`${r.emailProvider==='gmail'?'Gmail':'Mail · iCloud'} · ${r.title}`:r.title,body:r.notes || 'Chegou a hora do seu lembrete.',tag:`nexo-${r.id}-${r.startsAt}`}).catch(()=>{});}
     const receive=(event:Event)=>{void notify((event as CustomEvent<Notice>).detail).catch(()=>{});};
     window.addEventListener('nexo:notice',receive);
     return()=>{window.removeEventListener('nexo:notice',receive);};

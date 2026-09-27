@@ -1,0 +1,9 @@
+.mail-connections {display:grid;gap:20px;margin-bottom:24px;scroll-margin-top:80px;}
+.mail-section-title {display:flex;gap:14px;align-items:center;}.mail-section-title > svg {color:var(--nexo-primary-text);}.mail-section-title h2 {margin-top:6px;}
+.mail-connections p {font-size:13px;line-height:1.7;color:var(--nexo-text-secondary);overflow-wrap:anywhere;}
+.mail-provider-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;}
+.mail-provider {display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:20px;border:1px solid var(--nexo-border);border-radius:12px;min-width:0;}
+.mail-provider h3 {font-size:15px;overflow-wrap:anywhere;max-width:100%;}.mail-provider-heading {display:flex;gap:12px;justify-content:space-between;align-items:center;width:100%;flex-wrap:wrap;}.mail-state {font-size:11px;color:var(--nexo-text-muted);}
+.email-source {display:inline-flex;padding:4px 8px;background:var(--nexo-info-soft);color:var(--nexo-info);font-size:10px;font-weight:600;line-height:1.3;border-radius:5px;width:fit-content;margin:4px 0;}.email-source.gmail {background:var(--nexo-danger-soft);color:var(--nexo-danger);}
+.mail-provider .bank-actions {margin-top:auto;}.mail-icloud-form {display:grid;gap:16px;max-width:550px;}.mail-icloud-form label {display:grid;gap:8px;font-size:13px;}.mail-icloud-form a {color:var(--nexo-primary-text);text-decoration:underline;}.mail-footnote {font-size:12px!important;border-top:1px solid var(--nexo-border);padding-top:16px;}.mail-unavailable {font-size:12px!important;}
+@media(max-width:700px){.mail-provider-grid{grid-template-columns:1fr;}.mail-provider{padding:16px;}}

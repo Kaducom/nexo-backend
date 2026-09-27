@@ -1,3 +1,4 @@
+import MoneyEffects from "./MoneyEffects";
 import ReminderNotices from "./ReminderNotices";
 import { SyncIndicator } from "./AccountDataGate";
 import {
@@ -708,7 +709,7 @@ export default function AppLayout() {
        */}
 
       <main className="content" id="nexo-content" tabIndex={-1}>
-        <ReminderNotices /><Outlet />
+        <ReminderNotices /><MoneyEffects /><Outlet />
       </main>
 
       {/*

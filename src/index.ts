@@ -1,3 +1,6 @@
+import { gmailCallback, mailRoute } from "./mail/routes";
+import { processMail } from "./mail/engine";
+import { MailError } from "./mail/model";
 import { type Env } from './google';
 import { api, data, root } from './firestore';
 import { processReminders, sendPush } from './notifications';
@@ -23,6 +26,8 @@ export default {
     const url=new URL(request.url);
     if(url.pathname==='/'&&request.method==='GET')return json({service:'NEXO Backend',status:'online',scheduler:'every-minute',version:2});
     try{
+      if(url.pathname==='/mail/gmail/callback'&&request.method==='GET')return gmailCallback(request);
+      if(url.pathname.startsWith('/mail/'))return json(await mailRoute(request,env,await authenticate(request,env)));
       if(url.pathname==='/notifications/test'&&request.method==='POST'){
         const uid=await authenticate(request,env);
         const input=await request.json() as any;
@@ -32,7 +37,7 @@ export default {
         return json({success:true});
       }
       return json({error:'Rota não encontrada.'},404);
-    }catch(error:any){console.error('api_failed',{status:error.status ?? 500});return json({error:error.status===401?error.message:'Não foi possível enviar o aviso. Confira o registro deste aparelho e a configuração do servidor.'},error.status===401?401:503);}
+    }catch(error:any){if(error instanceof MailError)return json({error:error.message,code:error.code},error.status);console.error('api_failed',{status:error.status ?? 500});return json({error:error.status===401?error.message:'Não foi possível enviar o aviso. Confira o registro deste aparelho e a configuração do servidor.'},error.status===401?401:503);}
   },
-  async scheduled(_controller:ScheduledController,env:Env,ctx:ExecutionContext){ctx.waitUntil(processReminders(env));},
+  async scheduled(_controller:ScheduledController,env:Env,ctx:ExecutionContext){ctx.waitUntil(_controller.cron==='*/5 * * * *'?processMail(env):processReminders(env));},
 };

@@ -1,3 +1,4 @@
+import { celebrateMoney } from "../components/MoneyEffects";
 import TodayOverview from "../components/TodayOverview";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -108,6 +109,7 @@ export default function HomePage() {
       createdAt: now
     });
 
+    celebrateMoney(type, categoryName);
     setQuickAmount("");
     setQuickCategory(null);
     setQuickSaved(true);

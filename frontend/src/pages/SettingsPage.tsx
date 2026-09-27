@@ -1,3 +1,4 @@
+import MailConnections from "../components/MailConnections";
 import { testNexoNotification, isIPhoneBrowser } from "../services/notificationService";
 import AccountSyncSettings from "../components/AccountSyncSettings";
 import {
@@ -246,7 +247,7 @@ export default function SettingsPage() {
         </div>
       </header>
 
-      <AccountSyncSettings />
+      <MailConnections /><AccountSyncSettings />
       <section className="settings-grid">
         <article className="panel settings-card">
           <div className="settings-card-header">

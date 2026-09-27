@@ -7,7 +7,7 @@ Este repositório reúne o backend de notificações e o aplicativo web atualiza
 | `src/`, `wrangler.jsonc` | Worker de notificações Cloudflare | `npm run deploy` na raiz |
 | `frontend/` | Aplicativo React/Vite | `npm --prefix frontend run build` após instalar as dependências do frontend |
 
-O Worker existente mantém sua configuração e seus endpoints. O deploy do Worker na raiz não publica automaticamente `frontend/dist`: a hospedagem do aplicativo deve apontar para essa pasta de saída.
+O Worker oferece o agendador de notificações e as conexões Gmail/iCloud. Veja [EMAILS.md](EMAILS.md) para habilitar os provedores e [NOTIFICACOES.md](NOTIFICACOES.md) para configurar os avisos. O deploy do Worker na raiz não publica automaticamente `frontend/dist`: a hospedagem do aplicativo deve apontar para essa pasta de saída.
 
 O aplicativo está hospedado no Firebase em `https://nexo-15b2c.web.app`. Execute `firebase deploy --only hosting --project nexo-15b2c` dentro de `frontend`, após o build, para atualizar esse endereço. GitHub, Firebase Hosting e Cloudflare são etapas distintas.
 

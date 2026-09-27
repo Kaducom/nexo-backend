@@ -1,4 +1,4 @@
-export interface Env { FIREBASE_PROJECT_ID: string; FIREBASE_API_KEY: string; FIREBASE_CLIENT_EMAIL: string; FIREBASE_PRIVATE_KEY: string; }
+export interface Env { FIREBASE_PROJECT_ID: string; FIREBASE_API_KEY: string; FIREBASE_CLIENT_EMAIL: string; FIREBASE_PRIVATE_KEY: string; MAIL_ENCRYPTION_KEY?: string; GMAIL_CLIENT_ID?: string; GMAIL_CLIENT_SECRET?: string; GMAIL_REDIRECT_URI?: string; }
 interface GoogleTokenResponse { access_token: string; expires_in: number; token_type: string; }
 function base64UrlEncode(
 	input: string | ArrayBuffer,

@@ -15,6 +15,7 @@ export type Memory = {
 
 export type ReminderSourceType =
   | "manual"
+  | "email"
   | "financialCommitment";
 
 export type Reminder = {
@@ -47,6 +48,9 @@ export type Reminder = {
    * sourceId = 4
    */
   sourceId?: number;
+  emailProvider?: "gmail" | "icloud";
+  emailSender?: string;
+  emailReceivedAt?: string;
 
   createdAt: string;
 };

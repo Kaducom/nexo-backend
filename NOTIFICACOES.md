@@ -27,4 +27,4 @@ No iPhone, Web Push requer iOS 16.4 ou posterior e o NEXO instalado na Tela de I
 - A suíte Vitest/Workers não inicializou neste sandbox por restrição de acesso do esbuild às pastas superiores. Os cenários do agendador foram executados pelo runner Node e pelo emulador.
 - Recebimento real em iPhone/Windows e permissões da conta de serviço só podem ser confirmados após a publicação e um teste no aparelho.
 
-A integração bidirecional com agenda externa ainda depende da escolha do usuário entre Google Agenda e iCloud. A semana exibida na home, por enquanto, mostra os lembretes do próprio NEXO.
+O usuário definiu Gmail e iCloud Mail como fontes de lembretes. A conexão de e-mails está implementada e precisa da configuração descrita em [EMAILS.md](EMAILS.md). A semana da home mostra os lembretes do NEXO, incluindo os importados. Sincronização bidirecional com calendários não faz parte desta integração de e-mail.

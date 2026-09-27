@@ -35,7 +35,7 @@ export function firestoreTransport(uid: string): SyncTransport {
           const mirror = doc(firestoreDb, "users", uid, "reminders", String(change.id));
           if (change.deleted) transaction.delete(mirror);
           else transaction.set(mirror, {
-            title: payload.title, notes: payload.notes ?? "", startsAt: payload.startsAt, completed: payload.completed,
+            title: payload.emailProvider ? `${payload.emailProvider === "gmail" ? "Gmail" : "Mail · iCloud"}: ${payload.title}` : payload.title, notes: payload.notes ?? "", startsAt: payload.startsAt, completed: payload.completed,
             notifiedAt: legacyMatches && previous === undefined ? legacySnapshot!.data()!.notifiedAt ?? null : null,
             updatedAt: new Date().toISOString(),
             ...((previous?.payload?.completed && !payload.completed) ? {deliveries:{},leaseUntil:null} : {}),

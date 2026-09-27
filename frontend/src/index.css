@@ -1,3 +1,4 @@
+@import "./styles/money-effects.css";
 @import "./design/tokens.css";
 @import "./design/globals.css";
 @import "./design/components.css";
@@ -12,3 +13,5 @@
 @import "./styles/account-sync.css";
 
 @import "./styles/today.css";
+
+@import "./styles/mail.css";

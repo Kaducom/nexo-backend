@@ -1,0 +1,9 @@
+.money-effect { position: fixed; inset: 0; pointer-events: none; z-index: 110; overflow: hidden; }
+.money-effect-particles i { position: absolute; left: var(--left); top: 43%; width: 7px; height: 7px; border-radius: 50%; background: hsl(var(--hue) 80% 62%); box-shadow: 0 0 9px hsl(var(--hue) 80% 62% / .55); opacity: 0; animation: money-burst 1450ms ease-out var(--delay) both; }
+.money-effect.expense i { top: 12%; width: 16px; height: 16px; color: #efbb59; font-size: 18px; background: transparent; box-shadow: none; animation: money-fall 1450ms ease-in var(--delay) both; }
+.money-effect-message { position: absolute; bottom: max(110px, calc(env(safe-area-inset-bottom) + 90px)); left: 50%; transform: translateX(-50%); padding: 12px 20px; max-width: calc(100% - 40px); width: max-content; border-radius: 24px; background: #163d32; color: #ebfff6; box-shadow: 0 8px 32px #0004; text-align: center; font-weight: 600; font-size: 14px; animation: money-message 2s ease both; }
+.money-effect.expense .money-effect-message { background: #3c3426; color: #fff6df; }
+@keyframes money-burst { 0% { transform: translate(0,0) scale(.3); opacity: 0; } 12% { opacity: 1; } 85%,100% { transform: translate(var(--x),var(--y)) scale(.4); opacity: 0; } }
+@keyframes money-fall { 0% { transform: translateY(-40px) rotateY(0deg); opacity: 0; } 15% { opacity: .8; } 100% { transform: translateY(58vh) rotateY(540deg); opacity: 0; } }
+@keyframes money-message { 0% { opacity: 0; } 12%,80% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .money-effect-particles { display: none; } .money-effect-message { animation: none; } }
