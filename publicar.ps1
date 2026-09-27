@@ -17,6 +17,19 @@ if (-not (Test-Path -LiteralPath 'frontend/.env.local')) {
     throw 'Configure frontend/.env.local com VITE_FIREBASE_VAPID_KEY antes de publicar. Use frontend/.env.example como modelo.'
 }
 
+Invoke-NexoStep -Command 'npm' -Arguments @('ci', '--no-audit', '--no-fund')
+Write-Host 'Publicando o agendador no Cloudflare. Se solicitado, entre na conta que possui o nexo-backend.'
+$previousPreference = $ErrorActionPreference
+try {
+    $ErrorActionPreference = 'Continue'
+    $backendOutput = (& npx wrangler deploy 2>&1 | Out-String)
+    $backendExit = $LASTEXITCODE
+} finally { $ErrorActionPreference = $previousPreference }
+Write-Host $backendOutput
+if ($backendExit -ne 0) { throw 'Falha ao publicar o backend no Cloudflare. O frontend nao foi publicado.' }
+$backendMatch = [regex]::Match($backendOutput, 'https://nexo-backend\.[a-zA-Z0-9-]+\.workers\.dev')
+if (-not $backendMatch.Success) { throw 'Nao foi possivel identificar a URL workers.dev do backend. Confira a saida do Wrangler.' }
+$env:VITE_NEXO_API_URL = $backendMatch.Value
 Invoke-NexoStep -Command 'npm' -Arguments @('--prefix', 'frontend', 'ci', '--no-audit', '--no-fund')
 Invoke-NexoStep -Command 'npm' -Arguments @('--prefix', 'frontend', 'run', 'build')
 Invoke-NexoStep -Command 'git' -Arguments @('-c', "safe.directory=$PSScriptRoot", 'push', 'origin', 'main')

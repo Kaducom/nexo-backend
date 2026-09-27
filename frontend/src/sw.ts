@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { getPushAccount } from "./services/pushAccount";
 
 import { clientsClaim } from "workbox-core";
 
@@ -136,7 +137,8 @@ registerRoute(
 
 onBackgroundMessage(
   messaging,
-  (payload) => {
+  async (payload) => {
+    if (!payload.data?.uid || payload.data.uid !== await getPushAccount()) return;
     console.log(
       "[NEXO SW] Push recebido:",
       payload
@@ -174,7 +176,8 @@ onBackgroundMessage(
         "nexo-notification"
     };
 
-    self.registration.showNotification(
+    if (payload.notification) return;
+    return self.registration.showNotification(
       title,
       notificationOptions
     );

@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {processReminders} from '../src/notifications';
+import {encode,root} from '../src/firestore';
+const pair=await crypto.subtle.generateKey({name:'RSASSA-PKCS1-v1_5',modulusLength:2048,publicExponent:new Uint8Array([1,0,1]),hash:'SHA-256'},true,['sign','verify']);
+const env={FIREBASE_PROJECT_ID:'demo-nexo-sync',FIREBASE_API_KEY:'fake',FIREBASE_CLIENT_EMAIL:'fake@example.test',FIREBASE_PRIVATE_KEY:`-----BEGIN PRIVATE KEY-----\n${Buffer.from(await crypto.subtle.exportKey('pkcs8',pair.privateKey)).toString('base64')}\n-----END PRIVATE KEY-----`};
+const original=globalThis.fetch;let sent=[];
+async function put(path,value){const r=await original(`http://127.0.0.1:8080/v1/${root(env)}/${path}`,{method:'PATCH',headers:{Authorization:'Bearer owner','Content-Type':'application/json'},body:JSON.stringify({fields:encode(value).mapValue.fields})});assert(r.ok,await r.text());}
+await put('users/scheduler/devices/phone',{token:'scheduler-phone'});await put('users/scheduler/devices/pc',{token:'scheduler-pc'});await put('users/scheduler/reminders/71',{title:'Real Firestore',notes:'Test',startsAt:new Date(Date.now()-1000).toISOString(),completed:false,deliveries:{},leaseUntil:null});
+globalThis.fetch=async(url,init={})=>{const parsed=new URL(String(url));if(parsed.hostname==='oauth2.googleapis.com')return Response.json({access_token:'emulator',expires_in:3600});if(parsed.hostname==='fcm.googleapis.com'){sent.push(JSON.parse(init.body).message.token);return Response.json({name:'sent'});}if(parsed.hostname==='firestore.googleapis.com'){const r=await original('http://127.0.0.1:8080'+parsed.pathname+parsed.search,{...init,headers:{...init.headers,Authorization:'Bearer owner'}});if(!r.ok)console.log(parsed.href, await r.clone().text());return r;}throw Error('Unexpected network host');};
+await processReminders(env);assert(sent.includes('scheduler-phone'));assert(sent.includes('scheduler-pc'));const total=sent.length;await processReminders(env);assert.equal(sent.length,total);console.log('PASS Real Firestore REST scan, lease preconditions, delivery persistence and duplicate suppression');

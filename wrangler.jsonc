@@ -36,6 +36,7 @@
 	},
 
 	"upload_source_maps": true,
+    "triggers": { "crons": ["* * * * *"] },
 
 	/**
 	 * =====================================================
@@ -54,7 +55,8 @@
 	 */
 
 	"vars": {
-		"FIREBASE_PROJECT_ID": "nexo-15b2c"
+		"FIREBASE_PROJECT_ID": "nexo-15b2c",
+        "FIREBASE_API_KEY": "AIzaSyDQXFWwE_xIvBRbdd-gkpSWwwOBwT4775Y"
 	}
 
 	/**

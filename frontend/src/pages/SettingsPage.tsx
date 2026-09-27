@@ -1,3 +1,4 @@
+import { testNexoNotification, isIPhoneBrowser } from "../services/notificationService";
 import AccountSyncSettings from "../components/AccountSyncSettings";
 import {
   Bell,
@@ -176,7 +177,7 @@ export default function SettingsPage() {
         );
 
         setFeedback(
-          "Este navegador não oferece suporte às notificações do NEXO."
+          "No iPhone, adicione o NEXO à Tela de Início e abra pelo ícone para ativar os avisos."
         );
 
         break;
@@ -376,6 +377,8 @@ export default function SettingsPage() {
             </div>
           )}
 
+          <p className="settings-feedback">Os avisos dentro do NEXO funcionam enquanto o app está aberto. Para receber fora dele no iPhone, adicione o NEXO à Tela de Início e permita notificações.</p>
+          {notificationsActive && <><button className="nexo-button nexo-button-secondary" disabled={isActivating} onClick={handleEnableNotifications}>Registrar este aparelho novamente</button><button className="primary-button" disabled={isActivating} onClick={async()=>{setIsActivating(true);try{await testNexoNotification();setFeedback("Teste enviado. Confira o aviso neste aparelho.");}catch(error){setFeedback((error as Error).message);}finally{setIsActivating(false);}}}>Testar notificação</button></>}
           {feedback && (
             <p className="settings-feedback" role="status">
               {feedback}

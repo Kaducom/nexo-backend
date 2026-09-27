@@ -1,3 +1,4 @@
+import ReminderNotices from "./ReminderNotices";
 import { SyncIndicator } from "./AccountDataGate";
 import {
   Bell,
@@ -707,7 +708,7 @@ export default function AppLayout() {
        */}
 
       <main className="content" id="nexo-content" tabIndex={-1}>
-        <SyncIndicator /><Outlet />
+        <ReminderNotices /><Outlet />
       </main>
 
       {/*

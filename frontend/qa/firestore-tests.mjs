@@ -25,6 +25,12 @@ try{
    await assertFails(setDoc(path,{...record('memories'),revision:2,updatedAt:'fake'}));
    await assertSucceeds(setDoc(path,{...record('memories'),revision:2,deleted:true,payload:null}));
  });
+ await check('Device registration is private per account and validates tokens',async()=>{
+   const path='users/alice/devices/phone';
+   await assertSucceeds(setDoc(doc(alice,path),{token:'valid-test-token',platform:'iOS',updatedAt:new Date().toISOString()}));
+   await assertFails(getDoc(doc(bob,path)));await assertFails(setDoc(doc(bob,path),{token:'hijacked'}));
+   await assertFails(setDoc(doc(alice,path),{token:''}));await assertFails(setDoc(doc(alice,path),{token:17}));
+ });
  await check('Existing notification mirror and token access retained',async()=>{
    await assertSucceeds(setDoc(doc(alice,'users/alice'),{fcmToken:'test'}));
    await assertSucceeds(setDoc(doc(alice,'users/alice/reminders/9'),{title:'Teste',startsAt:new Date().toISOString(),completed:false}));

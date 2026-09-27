@@ -1,3 +1,4 @@
+import TodayOverview from "../components/TodayOverview";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { AnimatePresence, motion } from "framer-motion";
@@ -560,7 +561,7 @@ export default function HomePage() {
           </span>
         </div>
 
-        <div className="nexo-topbar-actions">
+        <div className="nexo-topbar-actions"><button type="button" className="nexo-topbar-button" aria-label="Buscar em todo o NEXO" onClick={()=>navigate("/buscar")}><Search size={18}/></button>
           <button
             type="button"
             className="nexo-topbar-button"
@@ -580,70 +581,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <motion.section
-        className="nexo-welcome"
-        variants={staggerContainer}
-        initial="hidden"
-        animate="visible"
-      >
-        <motion.div variants={cardMotion}>
-          <span className="nexo-welcome-label">
-            SEU SEGUNDO CÉREBRO
-          </span>
-
-          <h1>
-            {greeting}.
-            <span>Seu dia, com mais clareza.</span>
-          </h1>
-
-          <p>
-            Memórias, compromissos e finanças.
-            O que importa, sempre por perto.
-          </p>
-        </motion.div>
-
-        <motion.div variants={cardMotion}>
-          <button
-            type="button"
-            className="nexo-command-search"
-            onClick={() => navigate("/buscar")}
-          >
-            <div className="nexo-command-search-left">
-              <Search size={19} />
-              <span>
-                Buscar em todo o NEXO...
-              </span>
-            </div>
-
-            <kbd>Ctrl K</kbd>
-          </button>
-        </motion.div>
-
-        <motion.div
-          className="nexo-home-pulse"
-          variants={cardMotion}
-        >
-          <div className="nexo-pulse-item">
-            <Sparkles size={14} />
-
-            <span>
-              {activitySummary.total} registros
-              acompanhados
-            </span>
-          </div>
-
-          <div className="nexo-pulse-divider" />
-
-          <div className="nexo-pulse-item">
-            <CheckCircle2 size={14} />
-
-            <span>
-              {activitySummary.completedReminders}
-              {" "}{activitySummary.completedReminders === 1 ? "lembrete concluído" : "lembretes concluídos"}
-            </span>
-          </div>
-        </motion.div>
-      </motion.section>
+      <TodayOverview />
 
       <motion.section
         className="nexo-stat-grid"

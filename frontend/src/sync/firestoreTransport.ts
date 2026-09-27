@@ -38,6 +38,7 @@ export function firestoreTransport(uid: string): SyncTransport {
             title: payload.title, notes: payload.notes ?? "", startsAt: payload.startsAt, completed: payload.completed,
             notifiedAt: legacyMatches && previous === undefined ? legacySnapshot!.data()!.notifiedAt ?? null : null,
             updatedAt: new Date().toISOString(),
+            ...((previous?.payload?.completed && !payload.completed) ? {deliveries:{},leaseUntil:null} : {}),
           }, { merge: true });
           if (legacyRef && legacyMatches) transaction.delete(legacyRef);
         }

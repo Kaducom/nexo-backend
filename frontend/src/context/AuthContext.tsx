@@ -1,3 +1,4 @@
+import { setPushAccount } from "../services/pushAccount";
 import {
   createContext,
   useContext,
@@ -57,6 +58,7 @@ export function AuthProvider({
       onAuthStateChanged(
         firebaseAuth,
         (firebaseUser) => {
+          void setPushAccount(firebaseUser?.uid ?? null).catch(() => {});
           if (activeUid && firebaseUser?.uid !== activeUid) {
             setLoading(true);
             window.location.reload();
