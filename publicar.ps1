@@ -18,7 +18,13 @@ if (-not (Test-Path -LiteralPath 'frontend/.env.local')) {
 }
 
 Invoke-NexoStep -Command 'npm' -Arguments @('ci', '--no-audit', '--no-fund')
-Write-Host 'Publicando o agendador no Cloudflare. Se solicitado, entre na conta que possui o nexo-backend.'
+# The deploy output is captured below to extract its URL. Wrangler considers
+# that non-interactive, so complete browser authentication before capturing it.
+if (-not $env:CLOUDFLARE_API_TOKEN -and -not $env:CLOUDFLARE_API_KEY) {
+    Write-Host 'Autorizando Cloudflare no navegador. Entre na conta que possui nexo-backend e clique em Allow/Permitir.'
+    Invoke-NexoStep -Command 'npx' -Arguments @('wrangler', 'login')
+}
+Write-Host 'Publicando o agendador no Cloudflare.'
 $previousPreference = $ErrorActionPreference
 try {
     $ErrorActionPreference = 'Continue'
