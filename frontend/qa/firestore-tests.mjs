@@ -9,7 +9,7 @@ let passed=0;const check=async(name,fn)=>{await fn();passed++;console.log('PASS'
 try{
  await env.clearFirestore();
  await check('Mail credentials and OAuth state are server-only',async()=>{for(const collection of ['mailConnections','mailOAuthStates','mailReceipts','mailEvents']){await assertFails(getDoc(doc(alice,collection+'/test')));await assertFails(setDoc(doc(alice,collection+'/test'),{uid:'alice'}));}});
- for(const table of ['memories','reminders','transactions','financialCommitments','bankImports','bankRules'])await check(`Owner access / cross-account isolation: ${table}`,async()=>{
+ for(const table of ['memories','reminders','transactions','financialCommitments','bankImports','bankRules','financePlans','financeOccurrences','financeHistory','financeSettings'])await check(`Owner access / cross-account isolation: ${table}`,async()=>{
    const path=`users/alice/data/${table}_1`;
    await assertSucceeds(setDoc(doc(alice,path),record(table)));
    await assertSucceeds(getDoc(doc(alice,path)));

@@ -1,0 +1,25 @@
+import {useState,type FormEvent} from 'react';
+import MoneyInput from '../components/MoneyInput';
+import {categories} from './TransactionEditor';
+import {localDay,type FinancePlan,type PlanKind} from './model';
+import {formatCents,splitInstallments} from './money';
+import {savePlan} from './service';
+export default function PlanEditor({kind,existing,onSaved}:{kind:PlanKind;existing?:FinancePlan;onSaved:()=>void}){
+  const today=localDay();
+  const [form,setForm]=useState<FinancePlan>(existing??{kind,title:'',amountCents:0,category:kind==='subscription'?'Assinaturas':'Contas',startDate:today,period:kind==='bill'?'once':'monthly',dueRule:'day',dueDay:Number(today.slice(-2)),holidays:[],installments:12,initialPaid:0,card:'',status:'active',createdAt:'',updatedAt:''});
+  const [holidays,setHolidays]=useState(form.holidays.join(', ')),[error,setError]=useState(''),[busy,setBusy]=useState(false);
+  const change=<K extends keyof FinancePlan>(key:K,value:FinancePlan[K])=>setForm(f=>({...f,[key]:value}));
+  let preview:number[]=[];try{if(kind==='installment'&&form.amountCents)preview=splitInstallments(form.amountCents,form.installments);}catch{}
+  async function submit(e:FormEvent){e.preventDefault();if(busy)return;setBusy(true);setError('');try{await savePlan({...form,holidays:holidays.split(/[,\s]+/).filter(Boolean)});onSaved();}catch(e){setError((e as Error).message);}finally{setBusy(false);}}
+  return <form onSubmit={submit} className="v2-panel v2-plan-form"><h2>{existing?'Editar':kind==='subscription'?'Nova assinatura':kind==='installment'?'Nova compra parcelada':'Nova conta'}</h2><p>Criar uma cobrança não lança uma despesa. O pagamento precisa da sua confirmação.</p>
+    <div className="v2-form-grid"><label>Nome<input required maxLength={160} value={form.title} onChange={e=>change('title',e.target.value)}/></label><label>{kind==='installment'?'Valor total':'Valor da cobrança'}<MoneyInput aria-label={kind==='installment'?'Valor total':'Valor da cobrança'} required value={form.amountCents||null} onValueChange={n=>change('amountCents',n??0)} disabled={!!existing&&kind==='installment'}/></label><label>Categoria<select value={form.category} onChange={e=>change('category',e.target.value)}>{categories.map(c=><option key={c}>{c}</option>)}</select></label><label>{kind==='installment'?'Data da primeira parcela':'Data de início'}<input required type="date" value={form.startDate} disabled={!!existing} onChange={e=>{change('startDate',e.target.value);if(form.dueRule==='day')change('dueDay',Number(e.target.value.slice(-2)));}}/></label>
+      {kind!=='installment'&&<label>Periodicidade<select disabled={!!existing} value={form.period} onChange={e=>change('period',e.target.value as FinancePlan['period'])}>{kind==='bill'&&<option value="once">Uma vez</option>}<option value="weekly">Semanal</option><option value="monthly">Mensal</option><option value="yearly">Anual</option></select></label>}
+      {['monthly','yearly'].includes(form.period)&&<><label>Regra de vencimento<select value={form.dueRule} onChange={e=>{change('dueRule',e.target.value as 'day'|'business');change('dueDay',e.target.value==='business'?6:Number(form.startDate.slice(-2)));}}><option value="day">Dia fixo do mês</option><option value="business">N-ésimo dia útil</option></select></label><label>{form.dueRule==='business'?'Número do dia útil':'Dia do vencimento'}<input type="number" min={1} max={form.dueRule==='business'?15:31} value={form.dueDay} onChange={e=>change('dueDay',Number(e.target.value))} required/></label></>}
+      {kind==='installment'&&<><label>Total de parcelas<input type="number" min={1} max={600} required disabled={!!existing} value={form.installments} onChange={e=>change('installments',Number(e.target.value))}/></label><label>Parcelas já pagas<input type="number" min={0} max={form.installments} required disabled={!!existing} value={form.initialPaid} onChange={e=>change('initialPaid',Number(e.target.value))}/></label><label>Cartão (opcional)<input value={form.card} maxLength={80} onChange={e=>change('card',e.target.value)} placeholder="Ex.: Nubank"/></label></>}
+    </div>
+    {form.dueRule==='business'&&<label>Feriados a excluir (AAAA-MM-DD, separados por vírgula)<textarea value={holidays} onChange={e=>setHolidays(e.target.value)} placeholder="2026-12-25, 2027-01-01"/><small>Contamos segunda a sexta. Só excluímos os feriados que você informar; não há calendário bancário automático.</small></label>}
+    {!!preview.length&&<p>{preview.length} parcelas: {formatCents(Math.min(...preview))}{Math.min(...preview)!==Math.max(...preview)?` a ${formatCents(Math.max(...preview))}`:''}. Os centavos restantes ficam nas primeiras parcelas. Parcelas informadas como já pagas não criam despesas retroativas.</p>}
+    {existing&&<p>Alterações de valor e vencimento afetam cobranças ainda não pagas e não corrigidas individualmente. O histórico pago é preservado.</p>}
+    {error&&<p role="alert" className="v2-error">{error}</p>}<button className="primary-button" disabled={busy}>{busy?'Salvando…':existing?'Salvar plano':'Criar plano'}</button>
+  </form>;
+}

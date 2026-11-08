@@ -71,6 +71,7 @@ export type FinanceTransaction = {
   description: string;
 
   amount: number;
+  amountCents?: number;
 
   type: TransactionType;
 
@@ -85,6 +86,7 @@ export type FinanceTransaction = {
    * um compromisso financeiro.
    */
   financialCommitmentId?: number;
+  financeOccurrenceId?: number;
   importEntryId?: number;
 };
 
@@ -94,6 +96,7 @@ export type BankCandidate = {
   externalKey: string;
   description: string;
   amount: number;
+  amountCents?: number;
   type: TransactionType;
   occurredAt: string;
   reviewReason?: string;
@@ -148,6 +151,7 @@ export type FinancialCommitment = {
   title: string;
 
   amount: number;
+  amountCents?: number;
 
   category: string;
 

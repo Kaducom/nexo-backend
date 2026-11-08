@@ -428,6 +428,7 @@ export default function SettingsPage() {
           </div>
         </article>
       </section>
+      <p className="settings-feedback">NEXO 0.2 · Organização pessoal e finanças</p>
     </div>
   );
 }

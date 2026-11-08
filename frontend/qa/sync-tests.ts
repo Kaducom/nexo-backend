@@ -69,9 +69,9 @@ await check('Concurrent edits require explicit resolution; remote and local choi
   assert.equal((await a.syncOutbox.toArray())[0].baseRevision,3);
   await acknowledge(a,kept,cloud(kept,4),false);
 });
-await check('All six stores queue and survive reopening the browser database',async()=>{
+await check('All synchronized stores queue and survive reopening the browser database',async()=>{
   for(const table of syncedTables) await a.table(table).add({...memory,externalKey:'unique',matchKey:'merchant',amount:12});
-  assert.equal(await a.syncOutbox.count(),6); a.close(); await a.open(); assert.equal(await a.syncOutbox.count(),6);
+  assert.equal(await a.syncOutbox.count(),syncedTables.length); a.close(); await a.open(); assert.equal(await a.syncOutbox.count(),syncedTables.length);
   await a.syncOutbox.clear();
 });
 await check('Stable IDs deduplicate matching bank imports across devices',async()=>{

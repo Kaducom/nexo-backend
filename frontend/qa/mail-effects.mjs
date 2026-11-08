@@ -6,11 +6,12 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.NE
 const page=await browser.newPage({viewport:{width:390,height:844}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
 try {
   await page.goto('http://127.0.0.1:4174/');await page.locator('.today-agenda').waitFor();
+  await page.getByRole('button',{name:'Mais ferramentas e registro rápido',exact:true}).click();
   await page.getByRole('button',{name:'Ganho',exact:true}).click();
   await page.getByLabel('Valor do registro rápido').fill('200');await page.getByRole('button',{name:'Salário',exact:true}).click();
   await page.locator('.money-effect.income').waitFor();await page.screenshot({path:'qa/artifacts/money-income-mobile.png'});
   await page.waitForTimeout(2200);assert.equal(await page.locator('.money-effect').count(),0);
-  await page.goto('http://127.0.0.1:4174/financas');
+  await page.goto('http://127.0.0.1:4174/financas/anteriores');
   await page.getByLabel('Descrição',{exact:true}).fill('Guardei para minha reserva');await page.getByLabel('Valor',{exact:true}).fill('50');
   await page.getByRole('button',{name:'Registrar movimentação'}).click();await page.locator('.money-effect.saving').waitFor();
   await page.waitForTimeout(2200);

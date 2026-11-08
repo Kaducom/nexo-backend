@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { importLegacy } from "../sync/migration";
 import { resolveConflict } from "../sync/engine";
 
-const names: Record<string, string> = { memories: "Memória", reminders: "Lembrete", transactions: "Movimentação", financialCommitments: "Compromisso financeiro", bankImports: "Importação bancária", bankRules: "Regra de categoria" };
+const names: Record<string, string> = { memories: "Memória", reminders: "Lembrete", transactions: "Movimentação", financialCommitments: "Compromisso financeiro", bankImports: "Importação bancária", bankRules: "Regra de categoria", financePlans:"Plano financeiro",financeOccurrences:"Cobrança",financeHistory:"Histórico financeiro",financeSettings:"Referência de renda" };
 const fields: Record<string, string> = { title: "Título", description: "Descrição", content: "Conteúdo", notes: "Observações", tags: "Etiquetas", amount: "Valor", category: "Categoria", type: "Tipo", startsAt: "Data do lembrete", occurredAt: "Data", nextPaymentAt: "Próximo pagamento", completed: "Concluído", status: "Situação", completedPayments: "Parcelas pagas", totalPayments: "Total de parcelas", frequency: "Frequência", intervalDays: "Intervalo em dias", paymentMethod: "Pagamento", reminderMinutesBefore: "Aviso (minutos antes)" };
 const labels: Record<string, string> = {income:"Entrada",expense:"Saída",pending:"Pendente",posted:"Lançado",ignored:"Ignorado",active:"Ativo",completed:"Concluído",paused:"Pausado",cancelled:"Cancelado",weekly:"Semanal",biweekly:"Quinzenal",monthly:"Mensal",custom:"Personalizado",pix:"Pix",boleto:"Boleto",transfer:"Transferência",cash:"Dinheiro",card:"Cartão",other:"Outro"};
 function Version({ deleted, payload }: Pick<PendingChange, "deleted" | "payload">) {

@@ -1,3 +1,4 @@
+import {recordCents} from "../finance/money";
 import { stableId } from "../sync/model";
 import { db } from "../db";
 
@@ -371,121 +372,41 @@ return commitmentId;
  * =========================================================
  */
 
-export async function markFinancialCommitmentAsPaid(
-  commitment: FinancialCommitment
-) {
-  if (!commitment.id) {
-    throw new Error(
-      "Compromisso financeiro sem ID."
-    );
-  }
+export async function markFinancialCommitmentAsPaid(commitment: FinancialCommitment) {
+  if (!commitment.id) throw Error("Compromisso sem ID.");
+  return db.transaction("rw",db.transactions,db.financialCommitments,db.reminders,db.financeHistory,async()=>{
+    const current=await db.financialCommitments.get(commitment.id!);
+    if(!current||current.status!=="active")return false;
+    if(current.completedPayments!==commitment.completedPayments||current.nextPaymentAt!==commitment.nextPaymentAt)return false;
+    const now=new Date().toISOString(),next=current.completedPayments+1;
+    const finished=current.totalPayments!==null&&next>=current.totalPayments;
+    const transactionId=stableId(`commitmentPayment:${current.id}:${next}`);
+    if(await db.transactions.get(transactionId))return false;
+    await db.transactions.add({id:transactionId,description:current.title,amount:current.amount,amountCents:recordCents(current),type:"expense",category:current.category,occurredAt:now,createdAt:now,financialCommitmentId:current.id});
+    const after={...current,completedPayments:next,nextPaymentAt:finished?current.nextPaymentAt:calculateNextPaymentDate(current.nextPaymentAt,current.frequency,current.intervalDays),status:finished?"completed" as const:"active" as const,updatedAt:now};
+    await db.financialCommitments.put(after);
+    await db.financeHistory.add({planId:0,legacyId:current.id,action:"Pagamento confirmado",at:now,transactionId,before:current,after});
+    await syncFinancialCommitmentReminder(after);
+    return true;
+  });
+}
 
-  if (commitment.status !== "active") {
-    return;
-  }
-
-  const now =
-    new Date().toISOString();
-
-  const nextCompletedPayments =
-    commitment.completedPayments + 1;
-
-  const finished =
-    commitment.totalPayments !== null &&
-    nextCompletedPayments >=
-      commitment.totalPayments;
-
-  const nextPaymentAt =
-    finished
-      ? commitment.nextPaymentAt
-      : calculateNextPaymentDate(
-          commitment.nextPaymentAt,
-          commitment.frequency,
-          commitment.intervalDays
-        );
-
-  await db.transaction(
-    "rw",
-    db.transactions,
-    db.financialCommitments,
-    db.reminders,
-    async () => {
-      /*
-       * Registra o pagamento como uma saída REAL.
-       */
-
-      await db.transactions.add({
-        id: stableId(`commitmentPayment:${commitment.id}:${nextCompletedPayments}`),
-        description:
-          commitment.title,
-
-        amount:
-          commitment.amount,
-
-        type:
-          "expense",
-
-        category:
-          commitment.category,
-
-        occurredAt:
-          now,
-
-        createdAt:
-          now,
-
-        financialCommitmentId:
-          commitment.id
-      });
-
-      /*
-       * Atualiza o compromisso.
-       */
-
-      await db.financialCommitments.update(
-        commitment.id!,
-        {
-          completedPayments:
-            nextCompletedPayments,
-
-          nextPaymentAt,
-
-          status:
-            finished
-              ? "completed"
-              : "active",
-
-          updatedAt:
-            now
-        }
-      );
-
-      /*
-       * Busca a versão atualizada.
-       */
-
-      const updatedCommitment =
-        await db.financialCommitments.get(
-          commitment.id!
-        );
-
-      if (updatedCommitment) {
-        /*
-         * Sincroniza o lembrete.
-         *
-         * Se terminou:
-         * remove o lembrete pendente.
-         *
-         * Se continua:
-         * move o lembrete para a próxima ocorrência.
-         */
-
-        await syncFinancialCommitmentReminder(
-          updatedCommitment
-        );
-      }
-    }
-  );
+export async function reverseLegacyPayment(id:number) {
+  await db.transaction("rw",db.transactions,db.financialCommitments,db.reminders,db.financeHistory,async()=>{
+    const current=await db.financialCommitments.get(id);
+    const history=await db.financeHistory.where("legacyId").equals(id).toArray();
+    const last=history.filter(h=>h.action==="Pagamento confirmado"&&!h.reversed).sort((a,b)=>b.at.localeCompare(a.at))[0];
+    if(!current||!last)throw Error("Não há confirmação reversível registrada nesta versão.");
+    const before=last.before as FinancialCommitment,after=last.after as FinancialCommitment;
+    if(current.completedPayments!==after.completedPayments||current.nextPaymentAt!==after.nextPaymentAt)throw Error("O compromisso mudou após esse pagamento. Confira o histórico.");
+    const tx=await db.transactions.get(last.transactionId!);
+    if(!tx||tx.financialCommitmentId!==id)throw Error("A movimentação vinculada foi alterada ou removida.");
+    await db.transactions.delete(tx.id!);
+    const restored={...current,completedPayments:before.completedPayments,nextPaymentAt:before.nextPaymentAt,status:current.status==="completed"?"active" as const:current.status,updatedAt:new Date().toISOString()};
+    await db.financialCommitments.put(restored);await db.financeHistory.update(last.id!,{reversed:true});
+    await db.financeHistory.add({planId:0,legacyId:id,action:"Pagamento revertido",at:restored.updatedAt,before:current,after:restored,transactionId:tx.id});
+    await syncFinancialCommitmentReminder(restored);
+  });
 }
 
 /*

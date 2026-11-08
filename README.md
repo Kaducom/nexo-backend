@@ -1,5 +1,7 @@
 # NEXO
 
+A versão 0.2 está descrita em [NEXO-v0.2.md](NEXO-v0.2.md): interface, assinaturas, parcelamentos, máscara monetária, confirmação de pagamentos, migrações e publicação.
+
 Este repositório reúne o backend de notificações e o aplicativo web atualizado.
 
 | Caminho | Componente | Comando |

@@ -1,3 +1,4 @@
+import {formatCents} from "../finance/money";
 import { useState } from "react";
 import { useLiveQuery } from "dexie-react-hooks";
 import { Bell, Brain, CircleDollarSign, Search, WalletCards } from "lucide-react";
@@ -12,11 +13,11 @@ export default function SearchPage() {
   const results = useLiveQuery(async () => {
     if (!normalized) return [];
 
-    const [memories, reminders, transactions, financialCommitments] = await Promise.all([
+    const [memories, reminders, transactions, financialCommitments, plans] = await Promise.all([
       db.memories.toArray(),
       db.reminders.toArray(),
       db.transactions.toArray(),
-      db.financialCommitments.toArray()
+      db.financialCommitments.toArray(), db.financePlans.toArray()
     ]);
 
     const memoryResults = memories
@@ -69,7 +70,8 @@ export default function SearchPage() {
         icon: WalletCards
       }));
 
-    return [...memoryResults, ...reminderResults, ...transactionResults, ...commitmentResults];
+    const planResults=plans.filter(p=>`${p.title} ${p.category} ${p.card}`.toLowerCase().includes(normalized)).map(p=>({type:p.kind==='subscription'?'Assinatura':p.kind==='installment'?'Parcelamento':'Conta',title:p.title,subtitle:p.category,meta:formatCents(p.amountCents),icon:WalletCards}));
+    return [...planResults, ...memoryResults, ...reminderResults, ...transactionResults, ...commitmentResults];
   }, [normalized]) ?? [];
 
   return (

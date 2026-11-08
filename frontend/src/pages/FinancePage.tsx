@@ -1,3 +1,5 @@
+import MoneyInput from "../components/MoneyInput";
+import {decimalToCents,centsToDecimal} from "../finance/money";
 import { celebrateMoney } from "../components/MoneyEffects";
 import {
   FormEvent,
@@ -297,6 +299,7 @@ export default function FinancePage() {
     await db.transactions.add({
       description: categoryName,
       amount: parsedAmount,
+      amountCents: decimalToCents(rawAmount),
       type: "expense",
       category: categoryName,
       occurredAt: dateToIsoAtNoon(todayValue()),
@@ -439,8 +442,8 @@ export default function FinancePage() {
       description:
         description.trim(),
 
-      amount:
-        parsedAmount,
+      amount: parsedAmount,
+      amountCents: decimalToCents(amount),
 
       type,
 
@@ -514,8 +517,8 @@ export default function FinancePage() {
       title:
         commitmentTitle.trim(),
 
-      amount:
-        parsedAmount,
+      amount: parsedAmount,
+      amountCents: decimalToCents(commitmentAmount),
 
       category:
         commitmentCategory,
@@ -959,19 +962,10 @@ export default function FinancePage() {
                   R$
                 </span>
 
-                <input
+                <MoneyInput
                   aria-label="Valor do gasto rápido"
                   ref={quickAmountInputRef}
-                  type="text"
-                  inputMode="decimal"
-                  placeholder="0,00"
-                  value={quickAmount}
-                  onChange={(e) =>
-                    setQuickAmount(
-                      e.target.value
-                    )
-                  }
-                />
+                  value={quickAmount ? decimalToCents(quickAmount) : null} onValueChange={n=>setQuickAmount(n===null ? "" : centsToDecimal(n))} />
 
                 <button
                   type="submit"
@@ -1070,17 +1064,8 @@ export default function FinancePage() {
               <label>
                 Valor
 
-                <input
-                  inputMode="decimal"
-                  value={amount}
-                  onChange={(e) =>
-                    setAmount(
-                      e.target
-                        .value
-                    )
-                  }
-                  placeholder="50,00"
-                />
+                <MoneyInput
+                  value={amount ? decimalToCents(amount) : null} onValueChange={n=>setAmount(n===null ? "" : centsToDecimal(n))} />
               </label>
 
               <label>
@@ -1385,6 +1370,8 @@ export default function FinancePage() {
                           transaction.id
                         )
                       }
+                      disabled={!!(transaction.financialCommitmentId || transaction.financeOccurrenceId || transaction.importEntryId)}
+                      title="Pagamentos vinculados devem ser revertidos no módulo de origem"
                       aria-label="Excluir movimentação"
                     >
                       <Trash2
@@ -1460,19 +1447,8 @@ export default function FinancePage() {
               <label>
                 Valor de cada pagamento
 
-                <input
-                  inputMode="decimal"
-                  value={
-                    commitmentAmount
-                  }
-                  onChange={(e) =>
-                    setCommitmentAmount(
-                      e.target
-                        .value
-                    )
-                  }
-                  placeholder="200,00"
-                />
+                <MoneyInput
+                  value={commitmentAmount ? decimalToCents(commitmentAmount) : null} onValueChange={n=>setCommitmentAmount(n===null ? "" : centsToDecimal(n))} />
               </label>
 
               <div className="finance-form-grid">

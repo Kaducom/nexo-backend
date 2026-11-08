@@ -1,3 +1,4 @@
+import type {FinancePlan,FinanceOccurrence,FinanceHistory,FinanceSettings} from "./finance/model";
 import Dexie, {
   type Table,
   type EntityTable
@@ -16,6 +17,10 @@ import type {
 } from "./types";
 
 export type NexoDatabase = Dexie & {
+  financePlans: EntityTable<FinancePlan,"id">;
+  financeOccurrences: EntityTable<FinanceOccurrence,"id">;
+  financeHistory: EntityTable<FinanceHistory,"id">;
+  financeSettings: EntityTable<FinanceSettings,"id">;
   syncOutbox: Table<PendingChange, string>;
   syncVersions: Table<SyncVersion, string>;
   syncMeta: Table<SyncMeta, string>;
@@ -124,6 +129,8 @@ db.version(4).stores({
 });
 
 db.version(5).stores({ syncOutbox: "key,table", syncVersions: "key", syncMeta: "key" });
+// v6 is additive: old monetary values remain in reais, untouched.
+db.version(6).stores({financePlans:"++id,kind,status,startDate",financeOccurrences:"++id,planId,[planId+index],state,dueDate",financeHistory:"++id,planId,occurrenceId,legacyId,transactionId,at",financeSettings:"++id"});
 if (sync) installOutbox(db);
 return db;
 }

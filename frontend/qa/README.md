@@ -1,42 +1,25 @@
-# Validação visual e funcional local
+# Validação NEXO 0.2
 
-Este diretório é independente do build do produto. `server.mjs` substitui AuthContext, notificationService e reminderSync **somente no servidor de QA**. O código em `src/` continua usando os serviços reais. O banco Dexie é real, preenchido com dados fictícios em um contexto de navegador descartável.
+O servidor `server.mjs` usa autenticação e notificações simuladas; IndexedDB e os componentes são reais. Nenhum dado de produção é usado. Execute os comandos na raiz `work/nexo-git`.
 
-## Preparação
-
-Na raiz do projeto:
-
-```sh
-npm ci
-npm run build
-cd qa
-npm install
-npx playwright install chromium
+```powershell
+npm --prefix frontend run build
+npm --prefix frontend/qa run test:finance
+npm --prefix frontend/qa run test:sync
+# Terminal separado, encerrar com Ctrl+C ao terminar:
+node frontend/qa/server.mjs
+# Outro terminal:
+$env:NEXO_TEST_BROWSER='C:/Program Files/Google/Chrome/Application/chrome.exe'
+npm --prefix frontend/qa test
 ```
 
-Mantenha dois terminais abertos:
+A suíte atual usa `finance-v2-ui.mjs`, `bank-tests.mjs`, `home-notices.mjs` e `mail-effects.mjs`. Os antigos `test.mjs` e `extra.mjs` registram a interface v0.1 e não compõem a suíte principal da v0.2. Resultados e capturas ficam em `qa/artifacts/` (ignorados pelo Git).
 
-```sh
-# Terminal 1, raiz NEXO
-npm run preview -- --host 127.0.0.1 --port 4173
+Para regras, inicie `firebase emulators:start --only firestore --project demo-nexo-sync` em `frontend`, com Java configurado. Na raiz:
+
+```powershell
+$env:NEXO_SYNC_FIREBASE_TEST='1'
+node --import ./frontend/qa/typescript-loader.mjs frontend/qa/firestore-tests.mjs
 ```
 
-```sh
-# Terminal 2, pasta NEXO/qa
-npm run serve
-```
-
-Em um terceiro terminal, na pasta `qa`:
-
-```sh
-npm test
-```
-
-Resultados e capturas ficam em `qa/artifacts/`. Os testes usam as portas 4173 e 4174. Opcionalmente, `NEXO_TEST_BROWSER` pode apontar para um Chrome/Chromium instalado; sem essa variável, é usado o Chromium instalado pelo Playwright.
-
-A suíte principal executa 60 verificações; a complementar executa 15. Google login/logout e ativação de notificações são simulados. O redirecionamento de rotas protegidas para Login e o layout de Login são verificados no bundle de produção. Não há envio real de notificações, autenticação Google interativa, teste em aparelho físico ou certificação de leitor de tela.
-
-
-## Nubank e Atalhos
-
-A atualização acrescenta 19 cenários em `bank-tests.mjs` (94 verificações ao todo). `npm test` executa as três suítes; `npm run test:bank` executa somente a nova. Mantenha o servidor de QA na porta 4174. O parâmetro opcional `NEXO_TEST_URL` muda essa origem. O teste de migração usa uma página HTML vazia e um IndexedDB v3 fictício. Os testes de Atalhos simulam a URL entregue pelo iPhone, sem executar Apple Pay. Os resultados e capturas ficam em `qa/artifacts`.
+As regras são carregadas no emulador e o transporte Firestore real é exercitado. As suítes financeiras e de sincronização usam fake-indexeddb; a suíte de navegador usa IndexedDB real em contextos descartáveis. Não há login real Google/Apple, envio push real ou teste físico de iPhone. Veja [NEXO-v0.2.md](../../NEXO-v0.2.md) para resultados e limitações.

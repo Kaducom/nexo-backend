@@ -1,4 +1,4 @@
-export const syncedTables = ["memories", "reminders", "transactions", "financialCommitments", "bankImports", "bankRules"] as const;
+export const syncedTables = ["memories", "reminders", "transactions", "financialCommitments", "bankImports", "bankRules", "financePlans", "financeOccurrences", "financeHistory", "financeSettings"] as const;
 export type SyncedTable = typeof syncedTables[number];
 export type RecordData = { id: number; [key: string]: unknown };
 export type CloudRecord = {

@@ -1,3 +1,5 @@
+import HomeV2Page from "./pages/HomeV2Page";
+import FinanceV2Page from "./pages/FinanceV2Page";
 import {
   useEffect
 } from "react";
@@ -17,7 +19,7 @@ import {
 
 import FinancePage from "./pages/FinancePage";
 import BankImportsPage from "./pages/BankImportsPage";
-import HomePage from "./pages/HomePage";
+
 import LoginPage from "./pages/LoginPage";
 import MemoriesPage from "./pages/MemoriesPage";
 import RemindersPage from "./pages/RemindersPage";
@@ -60,7 +62,7 @@ function NexoApplication() {
       >
         <Route
           path="/"
-          element={<HomePage />}
+          element={<HomeV2Page />}
         />
 
         <Route
@@ -75,8 +77,9 @@ function NexoApplication() {
 
         <Route
           path="/financas"
-          element={<FinancePage />}
+          element={<FinanceV2Page />}
         />
+        <Route path="/financas/anteriores" element={<FinancePage />} />
         <Route path="/financas/importar" element={<BankImportsPage />} />
 
         <Route

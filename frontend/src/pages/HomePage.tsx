@@ -1,3 +1,5 @@
+import MoneyInput from "../components/MoneyInput";
+import {decimalToCents,centsToDecimal} from "../finance/money";
 import { celebrateMoney } from "../components/MoneyEffects";
 import TodayOverview from "../components/TodayOverview";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
@@ -103,6 +105,7 @@ export default function HomePage() {
     await db.transactions.add({
       description: categoryName,
       amount: parsedAmount,
+      amountCents: decimalToCents(rawAmount),
       type,
       category: categoryName,
       occurredAt: now,
@@ -1107,22 +1110,13 @@ export default function HomePage() {
             </div>
 
             <div className="nexo-quick-amount-row">
-              <span>R$</span>
 
-              <input
+
+              <MoneyInput
                 aria-label="Valor do registro rápido"
                 aria-describedby="quick-transaction-hint"
                 ref={quickAmountInputRef}
-                type="text"
-                inputMode="decimal"
-                placeholder="0,00"
-                value={quickAmount}
-                onChange={(e) =>
-                  setQuickAmount(
-                    e.target.value
-                  )
-                }
-              />
+                value={quickAmount ? decimalToCents(quickAmount) : null} onValueChange={n=>setQuickAmount(n===null ? "" : centsToDecimal(n))} />
 
               <button
                 type="submit"

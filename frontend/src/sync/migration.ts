@@ -35,6 +35,8 @@ export async function importLegacy(uid: string, account: NexoDatabase, legacyNam
       for (const table of syncedTables) for (const row of rows[table]) {
         ids[`${table}_${row.id}`] ??= table === "bankImports" || table === "bankRules" ? newRecordId(table, row) : randomId();
       }
+      for (const row of rows.financeSettings) ids[`financeSettings_${row.id}`] = 1;
+      for (const row of rows.financeOccurrences) ids[`financeOccurrences_${row.id}`] = stableId(`financeOccurrence:${ids[`financePlans_${row.planId}`] ?? row.planId}:${row.index}`);
       for (const row of rows.reminders) if (row.sourceType === "financialCommitment" && row.sourceId) {
         ids[`reminders_${row.id}`] = stableId(`commitmentReminder:${ids[`financialCommitments_${row.sourceId}`] ?? row.sourceId}`);
       }
@@ -48,7 +50,7 @@ export async function importLegacy(uid: string, account: NexoDatabase, legacyNam
       if (await account.syncMeta.get("legacyImported")) return;
       for (const table of syncedTables) for (const original of bundle.rows[table]) {
         const row: RecordData = { ...original, id: bundle.ids[`${table}_${original.id}`] };
-        const references = { financialCommitmentId: "financialCommitments", importEntryId: "bankImports", transactionId: "transactions", sourceId: "financialCommitments" };
+        const references = { financialCommitmentId: "financialCommitments", importEntryId: "bankImports", transactionId: "transactions", sourceId: "financialCommitments", planId: "financePlans", occurrenceId: "financeOccurrences", financeOccurrenceId: "financeOccurrences", legacyId: "financialCommitments" };
         for (const [field, target] of Object.entries(references)) if (row[field] && (field !== "sourceId" || row.sourceType === "financialCommitment")) {
           row[field] = bundle.ids[`${target}_${row[field]}`] ?? row[field];
         }

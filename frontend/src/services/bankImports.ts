@@ -1,3 +1,4 @@
+import {legacyCents} from "../finance/money";
 import { db } from "../db";
 import type { BankCandidate, BankImportEntry } from "../types";
 import { bankCategories, needsReview, normalizeMerchant } from "./bankParser";
@@ -9,7 +10,7 @@ const duplicateKey = (row: Pick<BankCandidate, "occurredAt" | "amount" | "type">
 async function postEntry(row: BankImportEntry, category: string) {
   if (!row.id || row.status !== "pending") throw new Error("Esta movimentação já foi tratada.");
   const transactionId = await db.transactions.add({
-    description: row.description, amount: row.amount, type: row.type, category,
+    description: row.description, amount: row.amount, amountCents: legacyCents(row.amount), type: row.type, category,
     occurredAt: row.occurredAt, createdAt: new Date().toISOString(), importEntryId: row.id,
   });
   await db.bankImports.update(row.id, { status: "posted", category, transactionId });
@@ -79,6 +80,7 @@ export async function reopenBankEntry(id: number) {
     if (!row || row.status === "pending") return;
     if (row.transactionId) {
       const transaction = await db.transactions.get(row.transactionId);
+      if (transaction?.financeOccurrenceId) throw new Error("Reverta primeiro o pagamento vinculado em Finanças antes de reabrir esta importação.");
       if (transaction?.importEntryId === row.id) await db.transactions.delete(row.transactionId);
     }
     await db.bankImports.update(id, { status: "pending", transactionId: undefined, category: undefined });
